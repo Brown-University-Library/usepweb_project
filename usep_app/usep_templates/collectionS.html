@@ -11,15 +11,17 @@
     <div id="listrow1" style="text-align:left; padding-left:1em;">
         USA:
         {% for code in region_codes %}
-            {%if "ITA" not in code %}
-            <span><a href="#{{ code|lower }}">{{ code }}</a></span>{% if not forloop.last %} | {% endif %}
+            {% if "ITA" not in code %}
+                {% if "AUCT" not in code %}
+                <span><a href="#{{ code|lower }}">{{ code }}</a></span>{% if not forloop.last %} | {% endif %}
+                {% endif %}
             {% endif %}
         {% endfor %}
     </div>
     <div id="listrow2" style="text-align:left;padding-left:1em;">
         OTHER:
         {% for code in region_codes %}
-            {%if "ITA" in code %}
+            {% if "ITA" in code %}
             <span ><a href="#{{ code|lower }}">{{ code }}</a></span>{% if not forloop.last %} {% endif %}
             {% endif %}
         {% endfor %}
