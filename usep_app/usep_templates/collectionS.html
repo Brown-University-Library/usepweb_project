@@ -24,6 +24,9 @@
             {% if "ITA" in code %}
             <span ><a href="#{{ code|lower }}">{{ code }}</a></span>{% if not forloop.last %} {% endif %}
             {% endif %}
+            {% if "AUCT" in code %}
+            <span ><a href="#{{ code|lower }}">{{ code }}</a></span>{% if not forloop.last %} {% endif %}
+            {% endif %}
         {% endfor %}
     </div>
 </div>
