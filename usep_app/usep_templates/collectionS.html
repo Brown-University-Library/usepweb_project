@@ -7,26 +7,24 @@
 {% block list_of_states %}
 
 <!-- this will break when more countries than italy are added -->
-  <div id="listofstates">
+<div id="listofstates">
     <div id="listrow1" style="text-align:left; padding-left:1em;">
-      USA:
+        USA:
         {% for code in region_codes %}
-         {%if "ITA" not in code %}
-      <span><a href="#{{ code|lower }}">{{ code }}</a></span>{% if not forloop.last %} | {% endif %}
-      {% endif %}
-
-    {% endfor %}
-  </div>
-  <div id="listrow2" style="text-align:left;padding-left:1em;">
-    OTHER:
-    {% for code in region_codes %}
-         {%if "ITA" in code %}
-      <span ><a href="#{{ code|lower }}">{{ code }}</a></span>{% if not forloop.last %} {% endif %}
-      {% endif %}
-
-    {% endfor %}
-  </div>
-  </div>
+            {%if "ITA" not in code %}
+            <span><a href="#{{ code|lower }}">{{ code }}</a></span>{% if not forloop.last %} | {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div id="listrow2" style="text-align:left;padding-left:1em;">
+        OTHER:
+        {% for code in region_codes %}
+            {%if "ITA" in code %}
+            <span ><a href="#{{ code|lower }}">{{ code }}</a></span>{% if not forloop.last %} {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
 {% endblock list_of_states %}
 
 {% block content %}
