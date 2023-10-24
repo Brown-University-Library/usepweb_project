@@ -101,6 +101,7 @@ TEMPLATES = [
 
 # Email
 EMAIL_HOST = os.environ['USEPWEB__EMAIL_HOST']
+SERVER_EMAIL = os.environ['USEPWEB__EMAIL_FROM_ADDRESS']
 EMAIL_PORT = int( os.environ['USEPWEB__EMAIL_PORT'] )
 
 
