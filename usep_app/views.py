@@ -244,7 +244,7 @@ def pub_children( request, publication ):
         r = requests.get(publications_xml_url)
         xml = etree.fromstring(r.content)
         elements = etree.XPath("//t:bibl[@xml:id='{0}']/t:title".format(publication), namespaces={"t":"http://www.tei-c.org/ns/1.0"})(xml)
-    except Exception, e:
+    except Exception as e:
         log.error("Exception retrieving titles.xml: ", repr(e))
 
     title = elements[0].text if elements else publication

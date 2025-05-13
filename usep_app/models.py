@@ -824,7 +824,7 @@ class Vocab(object):
             r = requests.get(self.tax_url)
             self.xml = etree.fromstring(r.content)
             self.control_vals = etree.XPath("//t:category/@xml:id", namespaces={"t":"http://www.tei-c.org/ns/1.0"})(self.xml)
-        except Exception, e:
+        except Exception as e:
             logging.error(e)
             self.control_vals = []
 
