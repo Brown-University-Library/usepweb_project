@@ -9,7 +9,7 @@ import requests
 from django.conf import settings as settings_project
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_str
 from usep_app import settings_app
 
 from django.utils.http import urlencode
@@ -39,7 +39,7 @@ class FlatCollection( models.Model ):
     collection_description = models.TextField( blank=True )
 
     def __unicode__(self):
-        return smart_unicode( self.collection_code, u'utf-8', u'replace' )
+        return smart_str( self.collection_code, u'utf-8', u'replace' )
 
     def save(self):
         """ Auto-builds collection_code from component parts if they exist. """
@@ -89,7 +89,7 @@ class AboutPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_unicode( self.title_page, u'utf-8', u'replace' )
+        return smart_str( self.title_page, u'utf-8', u'replace' )
     class Meta:
         verbose_name_plural = u'About page fields'
 
@@ -99,7 +99,7 @@ class TextsPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_unicode( self.title_page, u'utf-8', u'replace' )
+        return smart_str( self.title_page, u'utf-8', u'replace' )
     class Meta:
         verbose_name_plural = u'Texts page fields'
 
@@ -109,7 +109,7 @@ class LinksPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_unicode( self.title_page, u'utf-8', u'replace' )
+        return smart_str( self.title_page, u'utf-8', u'replace' )
     class Meta:
         verbose_name_plural = u'Links page fields'
 
@@ -119,7 +119,7 @@ class ContactsPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_unicode( self.title_page, u'utf-8', u'replace' )
+        return smart_str( self.title_page, u'utf-8', u'replace' )
     class Meta:
         verbose_name_plural = u'Contacts page fields'
 
@@ -129,7 +129,7 @@ class PublicationsPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_unicode( self.title_page, u'utf-8', u'replace' )
+        return smart_str( self.title_page, u'utf-8', u'replace' )
     class Meta:
         verbose_name_plural = u'Publication page fields'
 
