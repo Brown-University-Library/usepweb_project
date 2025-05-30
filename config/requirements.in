@@ -1,0 +1,6 @@
+# PyMySQL==0.10.1
+Django==1.11.29
+lxml==4.4.1
+mysqlclient==1.4.6
+requests==2.25.1
+shellvars-py==0.1.2
