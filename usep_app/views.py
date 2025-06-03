@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+
 
 import datetime, json, logging, os, pprint
 from . import models, settings_app
@@ -71,7 +71,7 @@ def collections( request ):
   format = request.GET.get( 'format', None )
   callback = request.GET.get( 'callback', None )
   response = build_response( format, callback )
-  elapsed_time = unicode( datetime.datetime.now() - start_time )
+  elapsed_time = str( datetime.datetime.now() - start_time )
   log.debug( 'elapsed time, ```%s```' % elapsed_time )
   return response
 
@@ -141,28 +141,28 @@ def collection( request, collection ):
                 data_dict = {}
         if data_dict == 'init':
             log.debug( 'data_dict looks good' )
-            inscription_dict, num, display_dict = c.enhance_solr_data( solr_data, request.META[u'wsgi.url_scheme'], request.get_host() )
+            inscription_dict, num, display_dict = c.enhance_solr_data( solr_data, request.META['wsgi.url_scheme'], request.get_host() )
             # log.debug( 'inscription_dict, ``%s``' % pprint.pformat(inscription_dict) )
             # log.debug( 'display_dict, ``%s``' % pprint.pformat(display_dict) )
             log.debug( 'type(inscription_dict), ``%s``' % type(inscription_dict) )
             log.debug( 'type(display_dict), ``%s``' % type(display_dict) )
             data_dict = {
-                u'collection_title': collection,
-                u'inscriptions': inscription_dict,
-                u'inscription_count': num,
-                u'display': display_dict,
-                u'flat_collection': FlatCollection.objects.get(collection_code=collection),
-                u'show_dates':False,
+                'collection_title': collection,
+                'inscriptions': inscription_dict,
+                'inscription_count': num,
+                'display': display_dict,
+                'flat_collection': FlatCollection.objects.get(collection_code=collection),
+                'show_dates':False,
                 }
         return data_dict
     def build_response( format, callback ):
-        if format == u'json':
+        if format == 'json':
             output = json.dumps( data_dict, sort_keys=True, indent=2 )
             if callback:
-                output = u'%s(%s)' % ( callback, output )
-            return HttpResponse( output, content_type = u'application/javascript; charset=utf-8' )
+                output = '%s(%s)' % ( callback, output )
+            return HttpResponse( output, content_type = 'application/javascript; charset=utf-8' )
         else:
-            return render( request, u'usep_templates/collectioN.html', data_dict )
+            return render( request, 'usep_templates/collectioN.html', data_dict )
     ## work ##
     start_time = datetime.datetime.now()
     data_dict = prepare_data()
@@ -171,10 +171,10 @@ def collection( request, collection ):
         return HttpResponseNotFound( '404 / Not Found' )
     # log.debug( 'data_dict (partial), ```{}```...'.format(pprint.pformat(data_dict))[0:1000] )
     log.debug( 'data_dict (partial), ```%s```...' % pprint.pformat(data_dict)[0:1000] )
-    format = request.GET.get( u'format', None )
-    callback = request.GET.get( u'callback', None )
+    format = request.GET.get( 'format', None )
+    callback = request.GET.get( 'callback', None )
     response = build_response( format, callback )
-    elapsed_time = unicode( datetime.datetime.now() - start_time )
+    elapsed_time = str( datetime.datetime.now() - start_time )
     log.debug( 'elapsed time, ```%s```' % elapsed_time )
     return response
 
@@ -182,7 +182,7 @@ def collection( request, collection ):
 def display_inscription( request, inscription_id ):
     """ Displays inscription html from saxon-ce rendering of source xml and an include file of bib data,
       which is then run through an xsl transform. """
-    log.debug( u'display_inscription() starting' )
+    log.debug( 'display_inscription() starting' )
     start_time = datetime.datetime.now()
     display_inscription_helper = DisplayInscriptionHelper()  # models.py
     source_xml_url = display_inscription_helper.build_source_xml_url(
@@ -196,14 +196,14 @@ def display_inscription( request, inscription_id ):
         settings_app.DISPLAY_INSCRIPTION_SAXONCE_FILE_URL,
         settings_app.DISPLAY_INSCRIPTION_XIPR_URL )
     # log.debug( u'display_inscription() context, %s' % pprint.pformat(context) )
-    log.debug( u'display_inscription() context (partial), ```%s```...' % pprint.pformat(context)[0:1000] )
-    elapsed_time = unicode( datetime.datetime.now() - start_time )
+    log.debug( 'display_inscription() context (partial), ```%s```...' % pprint.pformat(context)[0:1000] )
+    elapsed_time = str( datetime.datetime.now() - start_time )
     log.debug( 'elapsed time, ```%s```' % elapsed_time )
 
     if request.GET.get('format', '') == 'json':
         resp = HttpResponse( json.dumps(context, sort_keys=True, indent=2), content_type='application/javascript; charset=utf-8' )
     else:
-        resp = render( request, u'usep_templates/display_inscription.html', context )
+        resp = render( request, 'usep_templates/display_inscription.html', context )
     log.debug( 'returning resp' )
     return resp
 
@@ -216,18 +216,18 @@ def publications( request ):
     custom_static_url = project_settings.STATIC_URL
     publications_stylesheet_url = settings_app.DISPLAY_PUBLICATIONS_XSL_URL
     publications_xml_url = settings_app.DISPLAY_PUBLICATIONS_BIB_URL
-    if hostname.lower() == u"usepigraphy.brown.edu":
-        custom_static_url = custom_static_url.replace(u"library.brown.edu", u"usepigraphy.brown.edu")
-        publications_stylesheet_url = publications_stylesheet_url.replace(u"library.brown.edu", u"usepigraphy.brown.edu")
-        publications_xml_url = publications_xml_url.replace(u"library.brown.edu", u"usepigraphy.brown.edu")
+    if hostname.lower() == "usepigraphy.brown.edu":
+        custom_static_url = custom_static_url.replace("library.brown.edu", "usepigraphy.brown.edu")
+        publications_stylesheet_url = publications_stylesheet_url.replace("library.brown.edu", "usepigraphy.brown.edu")
+        publications_xml_url = publications_xml_url.replace("library.brown.edu", "usepigraphy.brown.edu")
     data_dict = {
-        u'publications_stylesheet_url': publications_stylesheet_url,
-        u'publications_xml_url': publications_xml_url,
-        u'custom_static_url': custom_static_url,
+        'publications_stylesheet_url': publications_stylesheet_url,
+        'publications_xml_url': publications_xml_url,
+        'custom_static_url': custom_static_url,
     }
-    elapsed_time = unicode( datetime.datetime.now() - start_time )
+    elapsed_time = str( datetime.datetime.now() - start_time )
     log.debug( 'elapsed time, ```%s```' % elapsed_time )
-    return render( request, u'usep_templates/publications.html', data_dict )
+    return render( request, 'usep_templates/publications.html', data_dict )
 
 
 def pub_children( request, publication ):
@@ -235,8 +235,8 @@ def pub_children( request, publication ):
     log.debug( 'pub_children() starting' )
     start_time = datetime.datetime.now()
 
-    log.debug( u'publication: %s' % publication )
-    assert type( publication ) == unicode
+    log.debug( 'publication: %s' % publication )
+    assert type( publication ) == str
 
     publications_xml_url = settings_app.DISPLAY_PUBLICATIONS_BIB_URL
     elements = []
@@ -252,26 +252,26 @@ def pub_children( request, publication ):
     #print "calling the Publication model"
     pub = models.Publication()
     pub.getPubData( publication )
-    pub.buildInscriptionList( request.META[u'wsgi.url_scheme'], request.get_host() )
+    pub.buildInscriptionList( request.META['wsgi.url_scheme'], request.get_host() )
     pub.makeImageUrls()
     data_dict = {
-        u'publication_title': title,
-        u'inscriptions': pub.inscription_entries,
-        u'inscription_count': pub.inscription_count, }
+        'publication_title': title,
+        'inscriptions': pub.inscription_entries,
+        'inscription_count': pub.inscription_count, }
     ## respond
-    format = request.GET.get( u'format', None )
-    callback = request.GET.get( u'callback', None )
+    format = request.GET.get( 'format', None )
+    callback = request.GET.get( 'callback', None )
 
-    elapsed_time = unicode( datetime.datetime.now() - start_time )
+    elapsed_time = str( datetime.datetime.now() - start_time )
     log.debug( 'elapsed time, ```%s```' % elapsed_time )
 
-    if format == u'json':
+    if format == 'json':
         output = json.dumps( data_dict, sort_keys=True, indent=2 )
         if callback:
-            output = u'%s(%s)' % ( callback, output )
-        return HttpResponse( output, content_type = u'application/javascript; charset=utf-8' )
+            output = '%s(%s)' % ( callback, output )
+        return HttpResponse( output, content_type = 'application/javascript; charset=utf-8' )
     else:
-        return render( request, u'usep_templates/publicatioN.html', data_dict )
+        return render( request, 'usep_templates/publicatioN.html', data_dict )
 
 
 def admin_links( request ):
@@ -304,28 +304,28 @@ def texts( request ):
     page_dct = {
         'page_data': page_data,
         'settings_app': settings_app }
-    return render( request, u'usep_templates/static.html', page_dct )
+    return render( request, 'usep_templates/static.html', page_dct )
 
 def links( request ):
   page_data = LinksPage.objects.all()[0]  # just one record
   page_dct = {
-    u'page_data': page_data,
-    u'settings_app': settings_app }
-  return render( request, u'usep_templates/static.html', page_dct )
+    'page_data': page_data,
+    'settings_app': settings_app }
+  return render( request, 'usep_templates/static.html', page_dct )
   # return render_to_response( u'usep_templates/static.html', page_dct )
 
 def about( request ):
   page_data = AboutPage.objects.all()[0]  # just one record
   page_dct = {
-    u'page_data': page_data,
-    u'settings_app': settings_app }
-  return render( request, u'usep_templates/static.html', page_dct )
+    'page_data': page_data,
+    'settings_app': settings_app }
+  return render( request, 'usep_templates/static.html', page_dct )
   # return render_to_response( u'usep_templates/static.html', page_dct )
 
 def contact( request ):
   page_data = ContactsPage.objects.all()[0]  # just one record
   page_dct = {
-    u'page_data': page_data,
-    u'settings_app': settings_app }
-  return render( request, u'usep_templates/static.html', page_dct )
+    'page_data': page_data,
+    'settings_app': settings_app }
+  return render( request, 'usep_templates/static.html', page_dct )
   # return render_to_response( u'usep_templates/static.html', page_dct )
