@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+
 
 import collections, json, logging, os, pprint
 from operator import itemgetter  # for a comparator sort
@@ -34,39 +34,39 @@ class FlatCollection( models.Model ):
     institution_code = models.CharField( blank=True, max_length=10 )
     repository_code = models.CharField( blank=True, max_length=10 )
     collection_name = models.CharField( blank=True, max_length=100 )
-    collection_address = models.CharField( blank=True, max_length=200, help_text=u'single string' )
+    collection_address = models.CharField( blank=True, max_length=200, help_text='single string' )
     collection_url = models.CharField( blank=True, max_length=200 )
     collection_description = models.TextField( blank=True )
 
     def __unicode__(self):
-        return smart_str( self.collection_code, u'utf-8', u'replace' )
+        return smart_str( self.collection_code, 'utf-8', 'replace' )
 
     def save(self):
         """ Auto-builds collection_code from component parts if they exist. """
         if len( self.collection_code.strip() ) == 0:
             new_collection_code = self.region_code.strip()
             if len( self.settlement_code.strip() ) > 0:
-                new_collection_code = u'%s.%s' % ( new_collection_code, self.settlement_code.strip() )
+                new_collection_code = '%s.%s' % ( new_collection_code, self.settlement_code.strip() )
             if len( self.institution_code.strip() ) > 0:
-                new_collection_code = u'%s.%s' % ( new_collection_code, self.institution_code.strip() )
+                new_collection_code = '%s.%s' % ( new_collection_code, self.institution_code.strip() )
             if len( self.repository_code.strip() ) > 0:
-                new_collection_code = u'%s.%s' % ( new_collection_code, self.repository_code.strip() )
+                new_collection_code = '%s.%s' % ( new_collection_code, self.repository_code.strip() )
             self.collection_code = new_collection_code
         super(FlatCollection, self).save() # Call the "real" save() method
 
     def as_dict(self):
         """ Allows easy serializing to json of queryset. """
         return {
-            u'collection_code': self.collection_code,
-            u'region_code': self.region_code,
-            u'region_name': self.region_name,
-            u'settlement_code': self.settlement_code,
-            u'institution_code': self.institution_code,
-            u'repository_code': self.repository_code,
-            u'collection_name': self.collection_name,
-            u'collection_address': self.collection_address,
-            u'collection_url': self.collection_url,
-            u'collection_description': self.collection_description,
+            'collection_code': self.collection_code,
+            'region_code': self.region_code,
+            'region_name': self.region_name,
+            'settlement_code': self.settlement_code,
+            'institution_code': self.institution_code,
+            'repository_code': self.repository_code,
+            'collection_name': self.collection_name,
+            'collection_address': self.collection_address,
+            'collection_url': self.collection_url,
+            'collection_description': self.collection_description,
         }
 
     def make_region_codes_list(self):
@@ -75,7 +75,9 @@ class FlatCollection( models.Model ):
         q = FlatCollection.objects.values('region_code').distinct()  # type: <class 'django.db.models.query.ValuesQuerySet'>; eg: [{'region_code': u'CA'}, {'region_code': u'MA'}]
         region_codes = []
         for entry in q:
-            region_codes.append( entry.values()[0] )
+            list_entry = list(entry.values())
+            value = list_entry[0]
+            region_codes.append(value)
         return sorted( region_codes )
 
     # end class FlatCollection
@@ -89,9 +91,9 @@ class AboutPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_str( self.title_page, u'utf-8', u'replace' )
+        return smart_str( self.title_page, 'utf-8', 'replace' )
     class Meta:
-        verbose_name_plural = u'About page fields'
+        verbose_name_plural = 'About page fields'
 
 
 class TextsPage(models.Model):
@@ -99,9 +101,9 @@ class TextsPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_str( self.title_page, u'utf-8', u'replace' )
+        return smart_str( self.title_page, 'utf-8', 'replace' )
     class Meta:
-        verbose_name_plural = u'Texts page fields'
+        verbose_name_plural = 'Texts page fields'
 
 
 class LinksPage(models.Model):
@@ -109,9 +111,9 @@ class LinksPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_str( self.title_page, u'utf-8', u'replace' )
+        return smart_str( self.title_page, 'utf-8', 'replace' )
     class Meta:
-        verbose_name_plural = u'Links page fields'
+        verbose_name_plural = 'Links page fields'
 
 
 class ContactsPage(models.Model):
@@ -119,9 +121,9 @@ class ContactsPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_str( self.title_page, u'utf-8', u'replace' )
+        return smart_str( self.title_page, 'utf-8', 'replace' )
     class Meta:
-        verbose_name_plural = u'Contacts page fields'
+        verbose_name_plural = 'Contacts page fields'
 
 
 class PublicationsPage(models.Model):
@@ -129,9 +131,9 @@ class PublicationsPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_str( self.title_page, u'utf-8', u'replace' )
+        return smart_str( self.title_page, 'utf-8', 'replace' )
     class Meta:
-        verbose_name_plural = u'Publication page fields'
+        verbose_name_plural = 'Publication page fields'
 
 
 ### other non-db classes ###
@@ -142,7 +144,7 @@ class PublicationsPage(models.Model):
 def id_sort(doc):
     """ Called by models.Collection.get_solr_data() """
     # idno = doc[u'msid_idno']
-    idno = doc.get(u'msid_idno', 'no-msid_idno-found')
+    idno = doc.get('msid_idno', 'no-msid_idno-found')
 
     # IN THE FUTURE:
     # add to this string to add new characters to split tokens over (splits over "." by default)
@@ -241,12 +243,12 @@ def separate_into_languages(docs):
 
     result = {}
     for doc in docs:
-        language = doc.get('language', u'')
+        language = doc.get('language', '')
         language = language[0] if type(language) == list else language
         if language in result:
-            result[language][u'docs'] += [doc]
+            result[language]['docs'] += [doc]
         else:
-            result[language] = {u'docs': [doc], u'display': language_pairs.get(language, language)}
+            result[language] = {'docs': [doc], 'display': language_pairs.get(language, language)}
     # log.debug( 'language separation result, ``%s``' % result )
     # log.debug( 'type(result), ``%s``' % type(result) )
     # log.debug( 'result.keys(), ``%s``' % result.keys() )
@@ -265,7 +267,7 @@ def separate_into_languages(docs):
 
     ## Actual display pairs used for convenience
     display_pairs_intermediate_tuples = []
-    for item in new_result.iteritems():
+    for item in new_result.items():
         ( language_code, data ) = ( item[0], item[1] )
         if data != None:
             display_text = data['display']
@@ -285,16 +287,16 @@ class Collection(object):
             Called by views.collection() """
         log.debug( 'starting Collection.get_solr_data()' )
         payload = {
-            u'q': u"id:{0}*".format(collection),
-            u'fl': u'*',
-            u'start': u'0',
-            u'rows': u'99000',
-            u'wt': u'json',
-            u'indent': u'on', }
+            'q': "id:{0}*".format(collection),
+            'fl': '*',
+            'start': '0',
+            'rows': '99000',
+            'wt': 'json',
+            'indent': 'on', }
         r = requests.get( settings_app.SOLR_URL_BASE, params=payload )
         log.debug( 'solr url, ```%s```' % r.url )
-        d = json.loads( r.content.decode(u'utf-8', u'replace') )
-        sorted_doc_list = sorted( d[u'response'][u'docs'], key=id_sort )  # sorts the doc-list on dict key 'msid_idno'
+        d = json.loads( r.content.decode('utf-8', 'replace') )
+        sorted_doc_list = sorted( d['response']['docs'], key=id_sort )  # sorts the doc-list on dict key 'msid_idno'
         log.debug( 'sorted_doc_list (first two), ```{}```...'.format(pprint.pformat(sorted_doc_list[0:2])) )
         return sorted_doc_list
 
@@ -305,14 +307,14 @@ class Collection(object):
         enhanced_list = []
         for entry in solr_data:
             image_url = None
-            if u'graphic_name' in entry.keys():
-                log.debug("enhance_solr_data graphic_name", entry['graphic_name'], entry[u'graphic_name'].startswith('http'))
-                if entry[u'graphic_name'].startswith('https:') or entry[u'graphic_name'].startswith('http:'):
-                    image_url = entry[u'graphic_name']
+            if 'graphic_name' in list(entry.keys()):
+                log.debug("enhance_solr_data graphic_name", entry['graphic_name'], entry['graphic_name'].startswith('http'))
+                if entry['graphic_name'].startswith('https:') or entry['graphic_name'].startswith('http:'):
+                    image_url = entry['graphic_name']
                 else:
-                    image_url = u'%s/%s' % ( settings_app.INSCRIPTIONS_URL_SEGMENT, entry[u'graphic_name'] )
-            entry[u'image_url'] = image_url
-            entry[u'url'] = u'%s://%s%s' % ( url_scheme, server_name, reverse(u'inscription_url', args=(entry[u'id'],)) )
+                    image_url = '%s/%s' % ( settings_app.INSCRIPTIONS_URL_SEGMENT, entry['graphic_name'] )
+            entry['image_url'] = image_url
+            entry['url'] = '%s://%s%s' % ( url_scheme, server_name, reverse('inscription_url', args=(entry['id'],)) )
             enhanced_list.append( entry )
         separated = separate_into_languages( enhanced_list )
         log.debug( 'type(separated), ``%s``' % type(separated) )
@@ -327,22 +329,22 @@ class DisplayInscriptionHelper( object ):
     def build_source_xml_url( self, url_pattern, is_secure, hostname, inscription_id ):
         """ Returns url to inscription xml.
             Called by views.display_inscription() """
-        scheme = u'https' if ( is_secure == True ) else u'http'
-        url = url_pattern.replace( u'SCHEME', scheme )
-        url = url.replace( u'HOSTNAME', hostname )
-        url = url.replace( u'INSCRIPTION_ID', inscription_id )
+        scheme = 'https' if ( is_secure == True ) else 'http'
+        url = url_pattern.replace( 'SCHEME', scheme )
+        url = url.replace( 'HOSTNAME', hostname )
+        url = url.replace( 'INSCRIPTION_ID', inscription_id )
         return url
 
     def build_context( self, hostname, custom_static_url, inscription_id, source_xml_url, xsl_url, saxonce_url, xipr_url ):
         """ Returns context dict.
             Called by views.display_inscription() """
         context = {
-          u'custom_static_url': self.update_host( hostname, custom_static_url ),
-          u'inscription_id': inscription_id,
-          u'source_xml_url': self.update_host( hostname, source_xml_url ),
-          u'xsl_url': self.update_host( hostname, xsl_url ),
-          u'saxonce_file_url': self.update_host( hostname, saxonce_url ),
-          u'xipr_url': self.update_host( hostname, xipr_url )
+          'custom_static_url': self.update_host( hostname, custom_static_url ),
+          'inscription_id': inscription_id,
+          'source_xml_url': self.update_host( hostname, source_xml_url ),
+          'xsl_url': self.update_host( hostname, xsl_url ),
+          'saxonce_file_url': self.update_host( hostname, saxonce_url ),
+          'xipr_url': self.update_host( hostname, xipr_url )
           }
         return context
 
@@ -351,7 +353,7 @@ class DisplayInscriptionHelper( object ):
             Called by build_context()
             Allows saxonce and ajax references to work with both `library.brown.edu` and `usepigraphy.brown.edu` urls.
             Note, eventually the https replacement may have to be removed. """
-        if hostname.lower() == u'usepigraphy.brown.edu':
+        if hostname.lower() == 'usepigraphy.brown.edu':
             url = url.replace( 'library.brown.edu', 'usepigraphy.brown.edu' )
             # url = url.replace( 'https', 'http' )
         return url
@@ -369,7 +371,7 @@ class DisplayInscriptionHelper( object ):
 class Publication(object):
 
     def __init__(self):
-        self.title = u''
+        self.title = ''
         self.inscription_count = 0
         self.inscription_entries = []
         self.inscription_images = []  # used for thumbnails
@@ -381,15 +383,15 @@ class Publication(object):
         Retrieves inscriptions with the given bib_id.
         """
 
-        log.debug( u'len(self.inscription_entries) START: %s' % len(self.inscription_entries) )
+        log.debug( 'len(self.inscription_entries) START: %s' % len(self.inscription_entries) )
 
         sh = SolrHelper()
 
-        payload = dict( sh.default_params.items() + {
-                u'q':u'bib_ids:{0}'.format(pub_id),
-                u'rows':u'99999',
-                u'fl': u'*',
-                u'sort': u'id asc'}.items()
+        payload = dict( list(sh.default_params.items()) + list({
+                'q':'bib_ids:{0}'.format(pub_id),
+                'rows':'99999',
+                'fl': '*',
+                'sort': 'id asc'}.items())
                 )
         r = requests.post( settings_app.SOLR_URL_BASE, payload )
         solr_response = r.content.decode('utf-8', 'replace')
@@ -397,29 +399,29 @@ class Publication(object):
         self.pub_solr_responses.append( solr_response )
         json_resp = json.loads(solr_response)
 
-        self.inscription_entries = json_resp[u'response'][u'docs']
-        self.inscription_count = json_resp[u'response'][u'numFound']
+        self.inscription_entries = json_resp['response']['docs']
+        self.inscription_count = json_resp['response']['numFound']
 
-        log.debug( u'self.inscription_entries END: %s' % self.inscription_entries[0:10] )
+        log.debug( 'self.inscription_entries END: %s' % self.inscription_entries[0:10] )
         return
 
     def buildInscriptionList( self, url_scheme, server_name ):
         """Adds item-url to inscription-dict list."""
         for item in self.inscription_entries:
-            item[u'url'] = u'%s://%s%s' % ( url_scheme, server_name, reverse(u'inscription_url', args=(item[u'id'],)) )
+            item['url'] = '%s://%s%s' % ( url_scheme, server_name, reverse('inscription_url', args=(item['id'],)) )
         return
 
     def makeImageUrls( self ):
         """Adds image_url to inscription-dict list."""
         for item in self.inscription_entries:
             image_url = None
-            if u'graphic_name' in item.keys():
-                log.debug("makeImageUrls graphic_name", item['graphic_name'], item[u'graphic_name'].startswith('http:'))
-                if item[u'graphic_name'].startswith('https:') or item[u'graphic_name'].startswith('http:'):
-                    image_url = item[u'graphic_name']
+            if 'graphic_name' in list(item.keys()):
+                log.debug("makeImageUrls graphic_name", item['graphic_name'], item['graphic_name'].startswith('http:'))
+                if item['graphic_name'].startswith('https:') or item['graphic_name'].startswith('http:'):
+                    image_url = item['graphic_name']
                 else:
-                    image_url = u'%s/%s' % ( settings_app.INSCRIPTIONS_URL_SEGMENT, item[u'graphic_name'] )
-            item[u'image_url'] = image_url
+                    image_url = '%s/%s' % ( settings_app.INSCRIPTIONS_URL_SEGMENT, item['graphic_name'] )
+            item['image_url'] = image_url
         return
 
     # end class Publication()
@@ -445,31 +447,31 @@ class Publications(object):
         #print "models.py: Publications: getPubData"
 
         sh = SolrHelper()
-        payload = dict( sh.default_params.items() + {
-            u'q': u'bib_ids_types:*',
-            u'rows': u'99999',
-            u'fl': u'id, bib_ids, bib_ids_types, bib_titles, bib_titles_all, bib_authors, status' }.items()
+        payload = dict( list(sh.default_params.items()) + list({
+            'q': 'bib_ids_types:*',
+            'rows': '99999',
+            'fl': 'id, bib_ids, bib_ids_types, bib_titles, bib_titles_all, bib_authors, status' }.items())
             )
 
         #print "\tAbout to make request!"
         r = requests.get( settings_app.SOLR_URL_BASE, params=payload )
 
         #print "\tReturned from the get request"
-        log.debug( u'publications solr call: %s' % r.url )
+        log.debug( 'publications solr call: %s' % r.url )
         self.pubs_solr_url = r.url
-        self.pubs_solr_response = r.content.decode( u'utf-8', u'replace' )
+        self.pubs_solr_response = r.content.decode( 'utf-8', 'replace' )
         jdict = json.loads( self.pubs_solr_response )
-        log.debug( u'publications solr query result dict keys.response: %s' % jdict.keys() )
-        log.debug( u'publications solr query result dict["response"] keys: %s' % jdict[u'response'].keys() )
-        log.debug( u'publications solr query result dict["response"]["numFound"]: %s' % jdict[u'response'][u'numFound'] )
-        log.debug( u'publications solr query result dict["response"]["docs"][0]: %s' % jdict[u'response'][u'docs'][0:5] )
-        self.pubs_entries = jdict[u'response'][u'docs']
+        log.debug( 'publications solr query result dict keys.response: %s' % list(jdict.keys()) )
+        log.debug( 'publications solr query result dict["response"] keys: %s' % list(jdict['response'].keys()) )
+        log.debug( 'publications solr query result dict["response"]["numFound"]: %s' % jdict['response']['numFound'] )
+        log.debug( 'publications solr query result dict["response"]["docs"][0]: %s' % jdict['response']['docs'][0:5] )
+        self.pubs_entries = jdict['response']['docs']
         # log.debug( u'self.pubs_entries: %s' % self.pubs_entries )
 
     def buildPubLists(self):
         """Builds list of publications grouped by type."""
         # log.debug( u'self.pubs_entries: %s' % self.pubs_entries )
-        log.debug( u'len( self.pubs_entries ): %s' % len( self.pubs_entries ) )
+        log.debug( 'len( self.pubs_entries ): %s' % len( self.pubs_entries ) )
         corpora_dict = {}; journal_dict = {}; monograph_dict = {}  # temp holders
 
         # #print len(self.pubs_entries)
@@ -484,20 +486,20 @@ class Publications(object):
 
             temp_bibs = []
             last_bib_type = None
-            for i, bib_id in enumerate( entry[u'bib_ids'] ):
+            for i, bib_id in enumerate( entry['bib_ids'] ):
                 try:
-                    last_bib_type = entry[u'bib_ids_types'][i]  # first should always succeed
+                    last_bib_type = entry['bib_ids_types'][i]  # first should always succeed
                     #print last_bib_type + "; bib_id: " + bib_id + "; i: " + i
                 except:
                     pass
                 try:
-                    bib_title = entry[u'bib_titles_all'][i]
+                    bib_title = entry['bib_titles_all'][i]
                 except:
-                    bib_title = u'title not found for bib_id "%s"' % bib_id
+                    bib_title = 'title not found for bib_id "%s"' % bib_id
                 try:
-                    bib_status = entry[u'status']
+                    bib_status = entry['status']
                 except:
-                    bib_status = u'no_status'
+                    bib_status = 'no_status'
                 # try:
                 #     #only monographs have a single author
                 #     if (last_bib_type == 'monograph'):
@@ -520,11 +522,11 @@ class Publications(object):
                 #     except:
                 #         bib_id = u'no_bib_id'
                 temp_bibs.append( {
-                    u'bib_id': bib_id,
-                    u'bib_title': bib_title,
-                    u'bib_type': last_bib_type,
-                    u'id': entry[u'id'],  # the inscription_id
-                    u'status': bib_status
+                    'bib_id': bib_id,
+                    'bib_title': bib_title,
+                    'bib_type': last_bib_type,
+                    'id': entry['id'],  # the inscription_id
+                    'status': bib_status
                     # u'bib_author': bib_author,
                     # u'bib_id': bib_id
                     } )
@@ -539,27 +541,27 @@ class Publications(object):
             for bib in temp_bibs:
                 ## update master dict
                 # self.master_pub_dict[ bib[u'bib_title'] ] = { u'id': bib[u'id'], u'status': bib[u'status'] }
-                if bib[u'bib_title'] in self.master_pub_dict.keys():
-                    self.master_pub_dict[ bib[u'bib_title'] ].append( bib[u'id'] )
+                if bib['bib_title'] in list(self.master_pub_dict.keys()):
+                    self.master_pub_dict[ bib['bib_title'] ].append( bib['id'] )
                 else:
-                    self.master_pub_dict[ bib[u'bib_title'] ] = [ bib[u'id'] ]
+                    self.master_pub_dict[ bib['bib_title'] ] = [ bib['id'] ]
                 ## update type-dicts
-                if bib['bib_type'] == u'corpora':
-                    if bib[u'bib_title'] in corpora_dict.keys():
-                        corpora_dict[ bib[u'bib_title'] ].append( bib[u'id'] )
+                if bib['bib_type'] == 'corpora':
+                    if bib['bib_title'] in list(corpora_dict.keys()):
+                        corpora_dict[ bib['bib_title'] ].append( bib['id'] )
                     else:
-                        corpora_dict[ bib[u'bib_title'] ] = [ bib[u'id'] ]
-                elif bib['bib_type'] == u'journal':
-                    if bib[u'bib_title'] in journal_dict.keys():
-                        journal_dict[ bib[u'bib_title'] ].append( bib[u'id'] )
+                        corpora_dict[ bib['bib_title'] ] = [ bib['id'] ]
+                elif bib['bib_type'] == 'journal':
+                    if bib['bib_title'] in list(journal_dict.keys()):
+                        journal_dict[ bib['bib_title'] ].append( bib['id'] )
                     else:
-                        journal_dict[ bib[u'bib_title'] ] = [ bib[u'id'] ]
-                elif bib['bib_type'] == u'monograph':
+                        journal_dict[ bib['bib_title'] ] = [ bib['id'] ]
+                elif bib['bib_type'] == 'monograph':
                     # log.debug( u'bib_type is monograph' )
-                    if bib[u'bib_title'] in monograph_dict.keys():
-                        monograph_dict[ bib[u'bib_title'] ].append( bib[u'id'] )
+                    if bib['bib_title'] in list(monograph_dict.keys()):
+                        monograph_dict[ bib['bib_title'] ].append( bib['id'] )
                     else:
-                        monograph_dict[ bib[u'bib_title'] ] = [ bib[u'id'] ]
+                        monograph_dict[ bib['bib_title'] ] = [ bib['id'] ]
 
                 # log.debug( u'monograph_dict is now: %s' % monograph_dict )
         ## store
@@ -592,12 +594,12 @@ class Publications(object):
 
 class SolrHelper(object):
     default_params = {
-        u'start': u'0',
-        u'indent': u'on',
-        u'facet': u'on',
-        u'facet.mincount': u'1',
-        u'facet.limit':u'-1',
-        u'wt': u'json' }
+        'start': '0',
+        'indent': 'on',
+        'facet': 'on',
+        'facet.mincount': '1',
+        'facet.limit':'-1',
+        'wt': 'json' }
     solr_url = settings_app.SOLR_URL_BASE
 
     default_facets = ["condition", "language", "material",
@@ -610,100 +612,100 @@ class SolrHelper(object):
 
     def makeSolrQuery(self, q_obj):
         fields = []
-        if u"notBefore" not in q_obj or u"notAfter" not in q_obj:
+        if "notBefore" not in q_obj or "notAfter" not in q_obj:
             # if we have an incomplete date, just skip it
-            if u"date_type" in q_obj:
-                del q_obj[u"date_type"]
-            if u"notBefore" in q_obj:
-                del q_obj[u"notBefore"]
+            if "date_type" in q_obj:
+                del q_obj["date_type"]
+            if "notBefore" in q_obj:
+                del q_obj["notBefore"]
 
-            if u"notAfter" in q_obj:
-                del q_obj[u"notAfter"]
+            if "notAfter" in q_obj:
+                del q_obj["notAfter"]
 
-        elif len(q_obj[u"notBefore"][0]) == 0 or len(q_obj[u"notBefore"][0]) == 0:
-            if u"date_type" in q_obj:
-                del q_obj[u"date_type"]
-            if u"notBefore" in q_obj:
-                del q_obj[u"notBefore"]
-            if u"notAfter" in q_obj:
-                del q_obj[u"notAfter"]
+        elif len(q_obj["notBefore"][0]) == 0 or len(q_obj["notBefore"][0]) == 0:
+            if "date_type" in q_obj:
+                del q_obj["date_type"]
+            if "notBefore" in q_obj:
+                del q_obj["notBefore"]
+            if "notAfter" in q_obj:
+                del q_obj["notAfter"]
 
         else:
-            dtype = q_obj[u"date_type"][0]
-            nb = int(q_obj[u"notBefore"][0])
-            na = int(q_obj[u"notAfter"][0])
-            del q_obj[u"date_type"]
-            del q_obj[u"notBefore"]
-            del q_obj[u"notAfter"]
-            qstring = u""
-            if dtype == u"inclusive":
-                qstring = u"(notBefore:[{0} TO {1}] OR notAfter:[{0} TO {1}] OR (notBefore:[* TO {0}] AND notAfter[{1} TO *]) OR (notBefore:[{0} TO *] AND notAfter[* TO {1}]))"
+            dtype = q_obj["date_type"][0]
+            nb = int(q_obj["notBefore"][0])
+            na = int(q_obj["notAfter"][0])
+            del q_obj["date_type"]
+            del q_obj["notBefore"]
+            del q_obj["notAfter"]
+            qstring = ""
+            if dtype == "inclusive":
+                qstring = "(notBefore:[{0} TO {1}] OR notAfter:[{0} TO {1}] OR (notBefore:[* TO {0}] AND notAfter[{1} TO *]) OR (notBefore:[{0} TO *] AND notAfter[* TO {1}]))"
             else:
-                qstring = u"(notBefore:[{0} TO *] AND notAfter[* TO {1}])"
+                qstring = "(notBefore:[{0} TO *] AND notAfter[* TO {1}])"
 
 
             fields += [qstring.format(nb, na)]
 
 
         for f in q_obj:
-            if f.startswith(u"facet_"):
+            if f.startswith("facet_"):
 
-                if f == u"facet_fake":
-                    if q_obj[f][0] == u'not_fake':
-                        fields += [u"NOT (fake:*)"]
+                if f == "facet_fake":
+                    if q_obj[f][0] == 'not_fake':
+                        fields += ["NOT (fake:*)"]
                     else:
                         fields += ["(fake:*)"]
                     continue
 
-                if q_obj[f][0] == u'none_value':
-                    fields += [u"NOT ({0}:*)".format(f[6:])]
+                if q_obj[f][0] == 'none_value':
+                    fields += ["NOT ({0}:*)".format(f[6:])]
                     continue
 
-                fields += [u"({0}:{1})".format(f[6:], q_obj[f][0])]
+                fields += ["({0}:{1})".format(f[6:], q_obj[f][0])]
                 continue
 
-            if f == u"fake":
-                if q_obj[f][0] == u'hide':
-                    fields = fields + [u"NOT (fake:*)"]
+            if f == "fake":
+                if q_obj[f][0] == 'hide':
+                    fields = fields + ["NOT (fake:*)"]
                 continue
 
-            if f == u"status":
-                if q_obj[f][0] == u"transcription":
-                    fields = fields + [u"(status:transcription)"]
-                elif q_obj[f][0] == u"metadata":
-                    fields = fields + [u"(status:transcription OR status:metadata)"]
+            if f == "status":
+                if q_obj[f][0] == "transcription":
+                    fields = fields + ["(status:transcription)"]
+                elif q_obj[f][0] == "metadata":
+                    fields = fields + ["(status:transcription OR status:metadata)"]
                 else:
-                     fields = fields + [u"(status:*)"]
+                     fields = fields + ["(status:*)"]
                 continue
 
             values = []
             for v in q_obj[f]:
                 if v:
-                    values = values + [u"{0}:{1}".format(f,v)]
+                    values = values + ["{0}:{1}".format(f,v)]
 
-            if values: fields = fields + [u"("+(u" OR ".join(values))+u")"]
+            if values: fields = fields + ["("+(" OR ".join(values))+")"]
 
-        return u" AND ".join(fields)
+        return " AND ".join(fields)
 
     def add_collection(self, result_list):
         for doc in result_list:
             col_list = []
-            if u"msid_region" in doc: col_list.append(doc[u'msid_region'])
-            if u"msid_settlement" in doc: col_list.append(doc[u'msid_settlement'])
-            if u"msid_institution" in doc: col_list.append(doc[u'msid_institution'])
-            if u"msid_repository" in doc: col_list.append(doc[u'msid_repository'])
+            if "msid_region" in doc: col_list.append(doc['msid_region'])
+            if "msid_settlement" in doc: col_list.append(doc['msid_settlement'])
+            if "msid_institution" in doc: col_list.append(doc['msid_institution'])
+            if "msid_repository" in doc: col_list.append(doc['msid_repository'])
 
-            doc[u'collection'] = u'.'.join(col_list)
+            doc['collection'] = '.'.join(col_list)
 
         return result_list
 
     def query(self, q_obj, params={}, search_form=False):
         q = self.makeSolrQuery(q_obj)
-        params = dict(params.items() + self.default_params.items())
-        params[u'facet.mincount'] = "1"
-        params[u'facet.field'] = self.default_facets
-        params[u'facet.query'] = ["NOT {0}:*".format(f) for f in self.null_fields]
-        params[u'q'] = q
+        params = dict(list(params.items()) + list(self.default_params.items()))
+        params['facet.mincount'] = "1"
+        params['facet.field'] = self.default_facets
+        params['facet.query'] = ["NOT {0}:*".format(f) for f in self.null_fields]
+        params['q'] = q
         log.debug( 'solr_url, `{}`'.format(self.solr_url) )
         r = requests.get(self.solr_url, params=params)
         log.debug( 'r.url, `{}`'.format(r.url) )
@@ -732,12 +734,12 @@ class SolrHelper(object):
         for field in facet_dict:
             facet_displays[field] = dict()
             counts = facet_dict[field]
-            if field == u"fake":
+            if field == "fake":
                 num = sum([counts[x] for x in range(1, len(counts), 2)])
                 li = []
                 if num != 0: li += [("fake",num)]
                 if facet_queries["NOT fake:*"] != 0: li += [("not_fake",facet_queries["NOT fake:*"])]
-                facet_displays[u"fake"] = li
+                facet_displays["fake"] = li
 
                 continue
 
@@ -750,7 +752,7 @@ class SolrHelper(object):
 
             if "NOT {0}:*".format(field) in facet_queries:
                 facet_displays[field]["none_value"] = facet_queries["NOT {0}:*".format(field)]
-            facet_displays[field] = sorted(facet_displays[field].items(), key=sorter)
+            facet_displays[field] = sorted(list(facet_displays[field].items()), key=sorter)
 
         return facet_displays
 
@@ -760,16 +762,16 @@ class SolrHelper(object):
         enhanced_list = []
         for entry in solr_data:
             image_url = None
-            if u'graphic_name' in entry.keys():
+            if 'graphic_name' in list(entry.keys()):
                 #image_url = u'%s/%s' % ( settings_app.INSCRIPTIONS_URL_SEGMENT, entry[u'graphic_name'] )
-                log.debug("enhance_solr_data graphic_name", entry['graphic_name'], entry[u'graphic_name'].startswith('http:'))
-                if entry[u'graphic_name'].startswith('https:') or entry[u'graphic_name'].startswith('http:'):
-                    image_url = entry[u'graphic_name']
+                log.debug("enhance_solr_data graphic_name", entry['graphic_name'], entry['graphic_name'].startswith('http:'))
+                if entry['graphic_name'].startswith('https:') or entry['graphic_name'].startswith('http:'):
+                    image_url = entry['graphic_name']
                 else:
-                    image_url = u'%s/%s' % ( settings_app.INSCRIPTIONS_URL_SEGMENT, entry[u'graphic_name'] )
+                    image_url = '%s/%s' % ( settings_app.INSCRIPTIONS_URL_SEGMENT, entry['graphic_name'] )
             
-            entry[u'image_url'] = image_url
-            entry[u'url'] = u'%s://%s%s' % ( url_scheme, server_name, reverse(u'inscription_url', args=(entry[u'id'],)) )
+            entry['image_url'] = image_url
+            entry['url'] = '%s://%s%s' % ( url_scheme, server_name, reverse('inscription_url', args=(entry['id'],)) )
             enhanced_list.append( entry )
         return enhanced_list
 
@@ -778,40 +780,40 @@ class Vocab(object):
     tax_url = settings_app.DISPLAY_PUBLICATIONS_BIB_URL.replace("titles.xml", "include_taxonomies.xml")
 
     fieldNames = {
-        u"condition": u"Condition",
-        u"decoration": u"Decoration",
-        u"fake": u"Fake",
-        u"language": u"Language",
-        u"material": u"Material",
-        u"object_type":u"Type of Object",
-        u"text_genre": u"Genre",
-        u"writing": u"Writing",
-        u"status": u"Transcription Status",
-        u"char": u"Special Characters",
-        u"name": u"Names",
-        u"metadata": u"Metadata",
-        u"transcription": u"Fully Transcribed",
-        u"bib_only": u"Citations",
+        "condition": "Condition",
+        "decoration": "Decoration",
+        "fake": "Fake",
+        "language": "Language",
+        "material": "Material",
+        "object_type":"Type of Object",
+        "text_genre": "Genre",
+        "writing": "Writing",
+        "status": "Transcription Status",
+        "char": "Special Characters",
+        "name": "Names",
+        "metadata": "Metadata",
+        "transcription": "Fully Transcribed",
+        "bib_only": "Citations",
     }
 
     language_pairs = {
-        u"grc": u"Greek",
-        u"grc-Latn": u"Greek written in Roman characters",
-        u"grc-Cprt": u"Greek written in Cypriot",
-        u"lat": u"Latin",
-        u"la": u"Latin",
-        u"la-Grek": u"Latin written in Greek",
-        u"lat-Grek":u"Latin written in Greek",
-        u"ett": u"Etruscan",
-        u"xrr": u"Raetic",
-        u"hbo": u"Hebrew",
-        u"phn": u"Punic",
-        u"arc": u"Aramaic",
-        u"ecy": u"Eteocypriot",
-        u"und": u"Undecided",
-        u"zxx": u"Non-linguistic",
-        u"unknown": u"Unknown",
-        u"lat": u"Latin",
+        "grc": "Greek",
+        "grc-Latn": "Greek written in Roman characters",
+        "grc-Cprt": "Greek written in Cypriot",
+        "lat": "Latin",
+        "la": "Latin",
+        "la-Grek": "Latin written in Greek",
+        "lat-Grek":"Latin written in Greek",
+        "ett": "Etruscan",
+        "xrr": "Raetic",
+        "hbo": "Hebrew",
+        "phn": "Punic",
+        "arc": "Aramaic",
+        "ecy": "Eteocypriot",
+        "und": "Undecided",
+        "zxx": "Non-linguistic",
+        "unknown": "Unknown",
+        "lat": "Latin",
     }
 
     others = {
@@ -836,7 +838,7 @@ class Vocab(object):
             if display:
                 self.map[val] = display[0].text
 
-        self.map = dict(self.map.items() + self.fieldNames.items() + self.language_pairs.items() + self.others.items())
+        self.map = dict(list(self.map.items()) + list(self.fieldNames.items()) + list(self.language_pairs.items()) + list(self.others.items()))
 
     def __getitem__(self, i):
         i = i.replace("#", "")
