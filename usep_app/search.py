@@ -2,7 +2,7 @@
 
 ## TODO: merge into views.py
 
-from __future__ import unicode_literals
+
 
 import datetime, json, logging, pprint
 import requests
@@ -23,17 +23,17 @@ def search_form(request):
 
     sh = models.SolrHelper()
 
-    results, facets, querystring = sh.query({u"*":u"*"}, {"rows":0}, search_form=True)
+    results, facets, querystring = sh.query({"*":"*"}, {"rows":0}, search_form=True)
 
     field_list = ["text_genre", "object_type", "material", "language", "writing", "condition", "char"]
     f = []
     for x in field_list:
         f += [(x, facets[x])]
 
-    elapsed_time = unicode( datetime.datetime.now() - start_time )
+    elapsed_time = str( datetime.datetime.now() - start_time )
     log.debug( 'elapsed time, ```%s```' % elapsed_time )
 
-    return render(request, u'usep_templates/search_form.html', {"facets":f})
+    return render(request, 'usep_templates/search_form.html', {"facets":f})
 
 
 def results(request):
@@ -46,15 +46,15 @@ def results(request):
 
     results, facets, querystring = sh.query(q, {"rows": 4000})
 
-    show_dates = u"notAfter" in querystring
+    show_dates = "notAfter" in querystring
 
     data_dict = {"q":q, "title":"Search", "facets":facets, "url":request.get_full_path(), "querystring":querystring, "show_dates":show_dates}
     if 'error' in results:
         data_dict['error'] = results['error']
     else:
-        data_dict['results'] = sh.enhance_solr_data(results, request.META[u'wsgi.url_scheme'], request.get_host())
+        data_dict['results'] = sh.enhance_solr_data(results, request.META['wsgi.url_scheme'], request.get_host())
 
-    elapsed_time = unicode( datetime.datetime.now() - start_time )
+    elapsed_time = str( datetime.datetime.now() - start_time )
     log.debug( 'elapsed time, ```%s```' % elapsed_time )
 
-    return render(request, u'usep_templates/results.html', data_dict)
+    return render(request, 'usep_templates/results.html', data_dict)
