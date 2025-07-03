@@ -79,13 +79,14 @@ class SeparateIntoLanguagesTest( TestCase ):
         item_dct = self.return_tuple[0]
         print(item_dct.keys())
 
+
         self.assertEqual(
             collections.OrderedDict, type( item_dct )
             )
 
         self.assertEqual(
             ['grc', 'lat', 'la', 'la-Grek', 'lat-Grek', 'arc', 'ecy', 'ett', 'hbo', 'phn', 'xrr', 'zxx', 'und', 'unknown'],
-            item_dct.keys()
+            list(item_dct.keys())
             )
 
         non_none_keys = []
