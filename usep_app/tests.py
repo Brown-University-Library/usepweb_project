@@ -77,7 +77,7 @@ class SeparateIntoLanguagesTest( TestCase ):
     def test_returned_items( self ):
         """ Checks items-element of returned tuple. """
         item_dct = self.return_tuple[0]
-        print(item_dct)
+        print(item_dct.keys())
         #
         self.assertEqual(
             collections.OrderedDict, type( item_dct )
