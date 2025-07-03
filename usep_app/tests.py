@@ -117,6 +117,6 @@ class UrlTest( TestCase ):
     def test_search(self):
         """ Checks '/usep/search/results/' """
         response = self.client.get( '/usep/search/results/?text=CA.Berk.UC.HMA' )
-        self.assertEqual( str, type(response.content) )  # means bytes
+        self.assertEqual( bytes, type(response.content) )  # means bytes
         self.assertEqual( 200, response.status_code )  # permanent redirect
         self.assertTrue(  b'Inscription Results' in response.content )
