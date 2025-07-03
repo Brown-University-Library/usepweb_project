@@ -78,16 +78,16 @@ class SeparateIntoLanguagesTest( TestCase ):
         """ Checks items-element of returned tuple. """
         item_dct = self.return_tuple[0]
         print(item_dct.keys())
-        #
+
         self.assertEqual(
             collections.OrderedDict, type( item_dct )
             )
-        #
+
         self.assertEqual(
-            [u'grc', u'lat', u'la', u'la-Grek', u'lat-Grek', u'arc', u'ecy', u'ett', u'hbo', u'phn', u'xrr', u'zxx', u'und', u'unknown'],
+            ['grc', 'lat', 'la', 'la-Grek', 'lat-Grek', 'arc', 'ecy', 'ett', 'hbo', 'phn', 'xrr', 'zxx', 'und', 'unknown'],
             item_dct.keys()
             )
-        #
+
         non_none_keys = []
         for ( key, val ) in item_dct.iteritems():
             if val != None:
