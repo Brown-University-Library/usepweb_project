@@ -764,7 +764,7 @@ class SolrHelper(object):
             image_url = None
             if 'graphic_name' in list(entry.keys()):
                 #image_url = u'%s/%s' % ( settings_app.INSCRIPTIONS_URL_SEGMENT, entry[u'graphic_name'] )
-                log.debug("enhance_solr_data graphic_name", entry['graphic_name'])
+                # log.debug("enhance_solr_data graphic_name", entry['graphic_name'])
                 if entry['graphic_name'].startswith('https:') or entry['graphic_name'].startswith('http:'):
                     image_url = entry['graphic_name']
                 else:
