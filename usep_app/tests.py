@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+
 
 import collections, logging, pprint
 
@@ -88,11 +88,11 @@ class SeparateIntoLanguagesTest( TestCase ):
             )
 
         non_none_keys = []
-        for ( key, val ) in item_dct.items():
+        for ( key, val ) in list(item_dct.items()):
             if val != None:
                 non_none_keys.append( key )
         self.assertEqual(
-            [u'grc', u'lat'], non_none_keys
+            ['grc', 'lat'], non_none_keys
             )
 
     def test_returned_count( self ):
@@ -104,7 +104,7 @@ class SeparateIntoLanguagesTest( TestCase ):
     def test_returned_display_pairs( self ):
         display_pairs = self.return_tuple[2]
         self.assertEqual(
-            collections.OrderedDict( [(u'grc', u'Greek'), (u'lat', u'Latin')] ),
+            collections.OrderedDict( [('grc', 'Greek'), ('lat', 'Latin')] ),
             display_pairs
             )
 
