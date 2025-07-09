@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+
 
 import os
 
 
-DOCUMENTATION_URL = u'https://github.com/Brown-University-Library/usepweb_project/blob/master/README.md'
+DOCUMENTATION_URL = 'https://github.com/Brown-University-Library/usepweb_project/blob/master/README.md'
 
 LOGIN_URL = str( os.environ['USEPWEB__LOGIN_URL'] )
 

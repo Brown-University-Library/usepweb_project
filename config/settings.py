@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+
 
 import json, logging, os
 
@@ -132,7 +132,7 @@ LOGGING = {
         'logfile': {
             'level':'DEBUG',
             'class':'logging.FileHandler',  # note: configure server to use system's log-rotate to avoid permissions issues
-            'filename': os.environ.get(u'USEPWEB__LOG_PATH'),
+            'filename': os.environ.get('USEPWEB__LOG_PATH'),
             'formatter': 'standard',
         },
         'console':{
@@ -149,7 +149,7 @@ LOGGING = {
     'loggers': {
         'usep_app': {
             'handlers': ['logfile'],
-            'level': os.environ.get(u'USEPWEB__LOG_LEVEL'),
+            'level': os.environ.get('USEPWEB__LOG_LEVEL'),
             'propagate': False,
         },
         'django.request': {

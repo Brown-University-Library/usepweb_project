@@ -17,7 +17,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings'  # so django can access
 
 ## load up env vars
 var_dct = shellvars.get_vars( ENV_SETTINGS_FILE )
-for ( key, val ) in var_dct.items():
+for ( key, val ) in list(var_dct.items()):
    os.environ[key.decode('utf-8')] = val.decode('utf-8')
 
 # print( 'the final env, ```{}```'.format( pprint.pformat(dict(os.environ)) ) )

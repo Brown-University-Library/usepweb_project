@@ -5,11 +5,11 @@ register = template.Library()
 
 v = models.Vocab()
 
-@register.filter( name=u'tax' )
+@register.filter( name='tax' )
 def tax( name ):
   return v[name]
 
-@register.filter( name=u'era' )
+@register.filter( name='era' )
 def era(i):
 	# there is no year 0
 	if i == 0: i = 1

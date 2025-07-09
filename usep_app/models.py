@@ -267,7 +267,7 @@ def separate_into_languages(docs):
 
     ## Actual display pairs used for convenience
     display_pairs_intermediate_tuples = []
-    for item in new_result.items():
+    for item in list(new_result.items()):
         ( language_code, data ) = ( item[0], item[1] )
         if data != None:
             display_text = data['display']
