@@ -85,7 +85,7 @@ class SeparateIntoLanguagesTest( TestCase ):
             )
 
         self.assertEqual(
-            ['grc', 'lat', 'la', 'la-Grek', 'lat-Grek', 'arc', 'ecy', 'ett', 'hbo', 'phn', 'xrr', 'zxx', 'und', 'unknown'],
+            ['grc', 'grc-Latn', 'grc-Cprt', 'lat', 'la', 'la-Grek', 'lat-Grek', 'arc', 'ecy', 'ett', 'hbo', 'phn', 'xrr', 'zxx', 'und', 'unknown'],
             list(item_dct.keys())
             )
 
