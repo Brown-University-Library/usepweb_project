@@ -90,7 +90,7 @@ class SeparateIntoLanguagesTest( TestCase ):
             )
 
         non_none_keys = []
-        for ( key, val ) in item_dct.iteritems():
+        for ( key, val ) in item_dct.items():
             if val != None:
                 non_none_keys.append( key )
         self.assertEqual(
