@@ -100,6 +100,7 @@ No Results. <a href="../">Search again...</a>
 		<h4>{{facet|tax}}</h4>
 		<ul class="facet_list">
 			{% for name,count in counts %}
+			<li> TEST {{name}} {{count}}</li>
 				<li>
 					{% if name == "none_value" %}
 					<a class="none_facet" href="{{url}}&amp;facet_{{facet}}={{name}}">
