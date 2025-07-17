@@ -93,7 +93,7 @@ No Results. <a href="../">Search again...</a>
 {% block facets%}
 {% for facet in facets %}
 	<p>{{ facet }}  </p>
-
+{% endfor %}
 <ul id="facets">
 <h4>{{results|length}} Total Results</h4>
 {% for facet,counts in facets.items %}
