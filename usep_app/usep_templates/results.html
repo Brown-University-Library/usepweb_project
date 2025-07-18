@@ -91,9 +91,6 @@ No Results. <a href="../">Search again...</a>
 
 {% endblock results %}
 {% block facets%}
-{% for facet in facets %}
-	<p>{{ facet }}  </p>
-{% endfor %}
 <ul id="facets">
 <h4>{{results|length}} Total Results</h4>
 {% for facet,counts in facets.items %}
@@ -103,7 +100,6 @@ No Results. <a href="../">Search again...</a>
 		<h4>{{facet|tax}}</h4>
 		<ul class="facet_list">
 			{% for name,count in counts %}
-			<li> TEST {{name}} {{count}}</li>
 				<li>
 					{% if name == "none_value" %}
 					<a class="none_facet" href="{{url}}&amp;facet_{{facet}}={{name}}">
