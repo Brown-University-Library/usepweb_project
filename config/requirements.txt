@@ -2,7 +2,7 @@
 #    uv pip compile requirements.in --output-file requirements.txt --universal --python 3.8
 certifi==2025.4.26
     # via requests
-chardet==4.0.0
+charset-normalizer==3.4.2
     # via requests
 django==1.11.29
     # via -r requirements.in
@@ -14,9 +14,9 @@ mysqlclient==1.4.6
     # via -r requirements.in
 pytz==2025.2
     # via django
-requests==2.25.1
+requests==2.32.4
     # via -r requirements.in
-shellvars-py @ git+https://github.com/birkin/shellvars-py.git@a9208f837c819fec6291b6e2b36aae6d6fb2c59d
+shellvars-py @ git+https://github.com/birkin/shellvars-py.git
     # via -r requirements.in
 urllib3==1.26.20
     # via requests
