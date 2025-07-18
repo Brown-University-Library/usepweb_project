@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+
 
 import collections, logging, pprint
 
@@ -77,22 +77,22 @@ class SeparateIntoLanguagesTest( TestCase ):
     def test_returned_items( self ):
         """ Checks items-element of returned tuple. """
         item_dct = self.return_tuple[0]
-        #
+
         self.assertEqual(
             collections.OrderedDict, type( item_dct )
             )
-        #
+
         self.assertEqual(
-            [u'grc', u'lat', u'la', u'la-Grek', u'lat-Grek', u'arc', u'ecy', u'ett', u'hbo', u'phn', u'xrr', u'zxx', u'und', u'unknown'],
-            item_dct.keys()
+            ['grc', 'grc-Latn', 'grc-Cprt', 'lat', 'la', 'la-Grek', 'lat-Grek', 'arc', 'ecy', 'ett', 'hbo', 'phn', 'xrr', 'zxx', 'und', 'unknown'],
+            list(item_dct.keys())
             )
-        #
+
         non_none_keys = []
-        for ( key, val ) in item_dct.iteritems():
+        for ( key, val ) in list(item_dct.items()):
             if val != None:
                 non_none_keys.append( key )
         self.assertEqual(
-            [u'grc', u'lat'], non_none_keys
+            ['grc', 'lat'], non_none_keys
             )
 
     def test_returned_count( self ):
@@ -104,7 +104,7 @@ class SeparateIntoLanguagesTest( TestCase ):
     def test_returned_display_pairs( self ):
         display_pairs = self.return_tuple[2]
         self.assertEqual(
-            collections.OrderedDict( [(u'grc', u'Greek'), (u'lat', u'Latin')] ),
+            collections.OrderedDict( [('grc', 'Greek'), ('lat', 'Latin')] ),
             display_pairs
             )
 
@@ -117,6 +117,6 @@ class UrlTest( TestCase ):
     def test_search(self):
         """ Checks '/usep/search/results/' """
         response = self.client.get( '/usep/search/results/?text=CA.Berk.UC.HMA' )
-        self.assertEqual( str, type(response.content) )  # means bytes
+        self.assertEqual( bytes, type(response.content) )  # means bytes
         self.assertEqual( 200, response.status_code )  # permanent redirect
         self.assertTrue(  b'Inscription Results' in response.content )

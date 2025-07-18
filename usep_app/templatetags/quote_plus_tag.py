@@ -6,9 +6,9 @@ from django.utils.http import urlquote_plus
 
 register = template.Library()
 
-@register.filter( name=u'insert_pluses' )
+@register.filter( name='insert_pluses' )
 def insert_pluses( name ):
   try:
     return urlquote_plus( name )
   except Exception as e:
-    return u''
+    return ''
