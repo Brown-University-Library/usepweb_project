@@ -164,8 +164,8 @@ def id_sort(doc):
     for x in idno.split("."):
         try:
             keylist += [int(x)]
-        except ValueError:
-            log.debug("VALUE ERROR")
+        except Exception as e:
+            log.debug("Exception!! {0}".format(e))
             tokens = break_token(x)
             keylist += tokens
 
