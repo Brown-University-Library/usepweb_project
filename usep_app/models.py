@@ -161,11 +161,13 @@ def id_sort(doc):
     log.debug( 'idno after split and remove, ``%s``' % idno )
 
     keylist = []
+
     for x in idno.split("."):
+        log.debug("TOKEN: ``%s``" % x)
         try:
             keylist += [int(x)]
-        except Exception as e:
-            log.debug("Exception!! {0}".format(e))
+        except ValueError:
+            log.debug("VALUE ERROR")
             tokens = break_token(x)
             keylist += tokens
 
@@ -175,6 +177,7 @@ def id_sort(doc):
 
 # Break a mixed numeric/text token into numeric/non-numeric parts. Helper for id_sort
 def break_token(token):
+    log.debug( 'starting break_token()' )
     idx1 = 0
     idx2 = 0
     parts = []
