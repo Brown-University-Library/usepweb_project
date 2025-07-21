@@ -166,13 +166,14 @@ def id_sort(doc):
         log.debug("TOKEN: ``%s``" % x)
         try:
             keylist += [int(x)]
+            log.debug("keylist after int conversion, ``%s``" % keylist)
         except ValueError:
             log.debug("VALUE ERROR")
             tokens = break_token(x)
             keylist += tokens
 
-    log.debug( 'tuple keylist after split and break_token, ``%s``' % tuple(keylist) )
     log.debug( 'keylist after split and break_token, ``%s``' % keylist )
+    log.debug( 'tuple keylist after split and break_token, ``%s``' % tuple(keylist) )
     return tuple(keylist)
 
 # Break a mixed numeric/text token into numeric/non-numeric parts. Helper for id_sort
