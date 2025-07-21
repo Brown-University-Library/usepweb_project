@@ -128,6 +128,7 @@ def collection( request, collection ):
         log.debug( 'starting collection->prepare_data()' )
         c = models.Collection()
         solr_data = c.get_solr_data( collection )  ## list
+        log.debug('Returned to collection view')
         log.debug( 'type(solr_data), ``%s``' % type(solr_data) )
         data_dict = 'init'
         if solr_data == []:

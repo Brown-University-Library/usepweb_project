@@ -145,6 +145,7 @@ def id_sort(doc):
     """ Called by models.Collection.get_solr_data() """
     # idno = doc[u'msid_idno']
     idno = doc.get('msid_idno', 'no-msid_idno-found')
+    log.debug("id_sort: idno, ``%s``" % idno)
 
     # IN THE FUTURE:
     # add to this string to add new characters to split tokens over (splits over "." by default)
@@ -157,15 +158,19 @@ def id_sort(doc):
     for c in remove_characters:
         idno = idno.replace(c, "")
 
+    log.debug( 'idno after split and remove, ``%s``' % idno )
+
     keylist = []
     for x in idno.split("."):
         try:
             keylist += [int(x)]
         except ValueError:
-
+            log.debug("VALUE ERROR")
             tokens = break_token(x)
             keylist += tokens
 
+    log.debug( 'tuple keylist after split and break_token, ``%s``' % tuple(keylist) )
+    log.debug( 'keylist after split and break_token, ``%s``' % keylist )
     return tuple(keylist)
 
 # Break a mixed numeric/text token into numeric/non-numeric parts. Helper for id_sort
