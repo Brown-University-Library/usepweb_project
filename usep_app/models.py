@@ -161,6 +161,7 @@ def id_sort(doc):
     log.debug( 'idno after split and remove, ``%s``' % idno )
 
     keylist = []
+    log.debug( 'keylist is definitely a list, ``%s``' % type(keylist) )
 
     for x in idno.split("."):
         log.debug("TOKEN: ``%s``" % x)
