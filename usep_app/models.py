@@ -178,6 +178,7 @@ def id_sort(doc):
         log.debug( 'tuple keylist after split and break_token, ``%s``' % tuple(keylist) )
     except Exception as e:
         log.debug( 'Exception in tuple conversion: %s' % e )
+    log.debug('exiting id_sort()')
     return tuple(keylist)
 
 # Break a mixed numeric/text token into numeric/non-numeric parts. Helper for id_sort
@@ -311,6 +312,7 @@ class Collection(object):
         d = json.loads( r.content.decode('utf-8', 'replace') )
         sorted_doc_list = sorted( d['response']['docs'], key=id_sort )  # sorts the doc-list on dict key 'msid_idno'
         log.debug( 'sorted_doc_list (first two), ```{}```...'.format(pprint.pformat(sorted_doc_list[0:2])) )
+        log.debug('exiting Collection.get_solr_data()')
         return sorted_doc_list
 
     def enhance_solr_data( self, solr_data, url_scheme, server_name ):
