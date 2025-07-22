@@ -43,13 +43,13 @@ class FlatCollection( models.Model ):
 
     def save(self):
         """ Auto-builds collection_code from component parts if they exist. """
-        if len( self.collection_code.strip() ) == 0:
+        if int(len( self.collection_code.strip() )) == 0:
             new_collection_code = self.region_code.strip()
-            if len( self.settlement_code.strip() ) > 0:
+            if int(len( self.settlement_code.strip() )) > 0:
                 new_collection_code = '%s.%s' % ( new_collection_code, self.settlement_code.strip() )
-            if len( self.institution_code.strip() ) > 0:
+            if int(len( self.institution_code.strip() )) > 0:
                 new_collection_code = '%s.%s' % ( new_collection_code, self.institution_code.strip() )
-            if len( self.repository_code.strip() ) > 0:
+            if int(len( self.repository_code.strip() )) > 0:
                 new_collection_code = '%s.%s' % ( new_collection_code, self.repository_code.strip() )
             self.collection_code = new_collection_code
         super(FlatCollection, self).save() # Call the "real" save() method
