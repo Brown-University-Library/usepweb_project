@@ -175,7 +175,7 @@ def id_sort(doc):
 
     log.debug( 'keylist after split and break_token, ``%s``' % keylist )
     try:
-        log.debug( 'tuple keylist after split and break_token, ``%s``' % tuple(keylist) )
+        log.debug( 'tuple keylist after split and break_token, {0}'.format(tuple(keylist) ) )
     except Exception as e:
         log.debug( 'Exception in tuple conversion: %s' % e )
     return tuple(keylist)
