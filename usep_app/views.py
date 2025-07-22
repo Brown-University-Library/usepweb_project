@@ -127,9 +127,7 @@ def collection( request, collection ):
     def prepare_data():
         log.debug( 'starting collection->prepare_data()' )
         c = models.Collection()
-        log.debug('about to start get_solr_data()')
         solr_data = c.get_solr_data( collection )  ## list
-        log.deb8g('finished get_solr_data()')
         log.debug('Returned to collection view')
         log.debug( 'type(solr_data), ``%s``' % type(solr_data) )
         data_dict = 'init'
