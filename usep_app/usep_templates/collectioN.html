@@ -14,7 +14,7 @@
   <div id="main">
     <div id="description">{% autoescape off %}{{ flat_collection.collection_description }} {% endautoescape %}</div>
     <div id="container">
-      <p>( Total: {{ inscription_count }} ) Jump to: {% for k,v in display %}<a href="#{{ k }}">{{ v }}</a>{% if not forloop.last %} | {% endif %}{% endfor %}</p>
+      <p>( Total: {{ inscription_count }} ) Jump to: {% for k,v in display.iteritems %}<a href="#{{ k }}">{{ v }}</a>{% if not forloop.last %} | {% endif %}{% endfor %}</p>
       {% for keylang,language_group in inscriptions.iteritems %}
       <h2 id="{{ keylang }}">{{ language_group.display }}</h2>
       <ul class="collection">
