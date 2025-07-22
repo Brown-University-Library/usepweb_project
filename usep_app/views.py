@@ -143,6 +143,8 @@ def collection( request, collection ):
         if data_dict == 'init':
             log.debug( 'data_dict looks good' )
             inscription_dict, num, display_dict = c.enhance_solr_data( solr_data, request.META['wsgi.url_scheme'], request.get_host() )
+            for key, val in display_dict.items():
+                log.debug('DISPLAY DICT: {0}'.format(key))
             # log.debug( 'inscription_dict, ``%s``' % pprint.pformat(inscription_dict) )
             # log.debug( 'display_dict, ``%s``' % pprint.pformat(display_dict) )
             log.debug( 'type(inscription_dict), ``%s``' % type(inscription_dict) )
