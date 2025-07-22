@@ -1,24 +1,26 @@
-import os, pprint, sys
-import shellvars
-from django.core.wsgi import get_wsgi_application
+import os
+import sys
 
+from django.core.wsgi import get_wsgi_application
 
 # print( 'the initial env, ```{}```'.format( pprint.pformat(dict(os.environ)) ) )
 
-PROJECT_DIR_PATH = os.path.dirname( os.path.dirname(os.path.abspath(__file__)) )
-ENV_SETTINGS_FILE = '/opt/local/project_local_settings/usep_django_web_env_settings/usep_django_web_env_settings.sh'
+PROJECT_DIR_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# ENV_SETTINGS_FILE = '/opt/local/project_local_settings/usep_django_web_env_settings/usep_django_web_env_settings.sh'
 # source $USEPWEB__SETTINGS  # set in `httpd/passenger.conf`, and `env/bin/activate`
 
 ## update path
-sys.path.append( PROJECT_DIR_PATH )
+sys.path.append(PROJECT_DIR_PATH)
 
 ## reference django settings
-os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings'  # so django can access its settings
+os.environ["DJANGO_SETTINGS_MODULE"] = (
+    "config.settings"  # so django can access its settings
+)
 
 ## load up env vars
-var_dct = shellvars.get_vars( ENV_SETTINGS_FILE )
-for ( key, val ) in list(var_dct.items()):
-   os.environ[key.decode('utf-8')] = val.decode('utf-8')
+# var_dct = shellvars.get_vars( ENV_SETTINGS_FILE )
+# for ( key, val ) in list(var_dct.items()):
+#    os.environ[key.decode('utf-8')] = val.decode('utf-8')
 
 # print( 'the final env, ```{}```'.format( pprint.pformat(dict(os.environ)) ) )
 

@@ -1,0 +1,21 @@
+[project]
+name = "usep-web-project"
+version = "0.0.0"
+description = "Code for USEP webapp."
+readme = ""
+requires-python = ">=3.8,<3.9"
+dependencies = [
+    "Django==1.11.29",
+    "lxml==4.4.1",
+    "requests==2.25.1",
+    "shellvars-py @ git+https://github.com/birkin/shellvars-py.git",
+]
+
+[dependency-groups]
+local = []
+staging = [ 
+    "mysqlclient==1.4.6",  
+    ]
+prod = [ 
+    "mysqlclient==1.4.6", 
+    ]
