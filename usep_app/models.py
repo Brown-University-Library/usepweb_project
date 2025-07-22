@@ -312,8 +312,9 @@ class Collection(object):
         # sorted_doc_list = sorted( d['response']['docs'], key=id_sort )  # sorts the doc-list on dict key 'msid_idno'
         # log.debug( 'sorted_doc_list (first two), ```{}```...'.format(pprint.pformat(sorted_doc_list[0:2])) )
         unsorted_docs = d['response']['docs']
+
         for d in unsorted_docs:
-            print("DOC!")
+            log.debug("DOC!")
         return unsorted_docs
 
     def enhance_solr_data( self, solr_data, url_scheme, server_name ):
