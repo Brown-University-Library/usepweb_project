@@ -146,7 +146,8 @@ def collection( request, collection ):
             for key, val in display_dict.items():
                 log.debug('DISPLAY DICT: {0}'.format(key))
             for key, val in inscription_dict.items():
-                log.debug('INSCRIPTION DICT: {0}'.format(key))
+                log.debug('INSCRIPTION DICT KEY: {0}'.format(key))
+                log.debug('INSCRIPTION DICT VALUE: {0}'.format(val))
             # log.debug( 'inscription_dict, ``%s``' % pprint.pformat(inscription_dict) )
             # log.debug( 'display_dict, ``%s``' % pprint.pformat(display_dict) )
             log.debug( 'type(inscription_dict), ``%s``' % type(inscription_dict) )
