@@ -12,6 +12,7 @@ def tax( name ):
 @register.filter( name='era' )
 def era(i):
 	# there is no year 0
+	log.debug( 'starting era() with i = %s' % i )
 	if i == 0: i = 1
 
 	if i < 0:
