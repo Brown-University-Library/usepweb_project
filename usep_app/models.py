@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
-
 import collections, json, logging, os, pprint
 from operator import itemgetter  # for a comparator sort
 
@@ -84,7 +82,6 @@ class FlatCollection( models.Model ):
 
 
 ### django-db models for static pages ###
-
 
 class AboutPage(models.Model):
     title_page = models.CharField( blank=True, max_length=100 )
@@ -172,12 +169,8 @@ def id_sort(doc):
             log.debug("VALUE ERROR")
             tokens = break_token(x)
             keylist += tokens
-
-    log.debug( 'keylist after split and break_token, ``%s``' % keylist )
-    try:
-        log.debug( 'tuple keylist after split and break_token, {0}'.format(tuple(keylist) ) )
-    except Exception as e:
-        log.debug( 'Exception in tuple conversion: %s' % e )
+    
+    log.debug( 'tuple keylist after split and break_token, {0}'.format(tuple(keylist) ) )
     return tuple(keylist)
 
 # Break a mixed numeric/text token into numeric/non-numeric parts. Helper for id_sort
@@ -193,7 +186,6 @@ def break_token(token):
         condition = token[idx2] in string.digits
         if not numeric:
             condition = not condition
-
 
         if condition:
             idx2 += 1
@@ -309,9 +301,11 @@ class Collection(object):
         r = requests.get( settings_app.SOLR_URL_BASE, params=payload )
         log.debug( 'solr url, ```%s```' % r.url )
         d = json.loads( r.content.decode('utf-8', 'replace') )
-        # sorted_doc_list = sorted( d['response']['docs'], key=id_sort )  # sorts the doc-list on dict key 'msid_idno'
+        sorted_doc_list = sorted( d['response']['docs'], key=id_sort )  # sorts the doc-list on dict key 'msid_idno'
         # log.debug( 'sorted_doc_list (first two), ```{}```...'.format(pprint.pformat(sorted_doc_list[0:2])) )
         unsorted_docs = d['response']['docs']
+
+        log.debug('Unsorted docs type: {0}'.format(type(unsorted_docs)))
 
         for d in unsorted_docs:
             log.debug("DOC!")
