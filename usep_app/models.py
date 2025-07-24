@@ -185,11 +185,8 @@ def different_sort(doc):
 
     for x in idno.split("."):
         x = re.sub(r"\D", "", x)
-        try:
-            keylist += [int(x)]
-            log.debug("keylist after int conversion, ``%s``" % keylist)
-        except ValueError:
-            continue
+        keylist += [x]
+        log.debug("keylist after int conversion, ``%s``" % keylist)
     
     log.debug( 'tuple keylist after split and break_token, {0}'.format(tuple(keylist) ) )
     return tuple(keylist)
