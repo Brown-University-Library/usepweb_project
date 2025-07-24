@@ -325,7 +325,6 @@ class Collection(object):
         r = requests.get( settings_app.SOLR_URL_BASE, params=payload )
         log.debug( 'solr url, ```%s```' % r.url )
         d = json.loads( r.content.decode('utf-8', 'replace') )
-        log.debug('KEY {0}'.format(key))
         sorted_doc_list = sorted( d['response']['docs'], key=different_sort )  # sorts the doc-list on dict key 'msid_idno'
         # log.debug( 'sorted_doc_list (first two), ```{}```...'.format(pprint.pformat(sorted_doc_list[0:2])) )
         unsorted_docs = d['response']['docs']
