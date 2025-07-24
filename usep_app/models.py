@@ -184,7 +184,7 @@ def different_sort(doc):
     keylist = []
 
     for x in idno.split("."):
-        re.sub(r"\D", "", doc)
+        re.sub(r"\D", "", x)
         log.debug("TOKEN: ``%s``" % x)
         try:
             keylist += [int(x)]
