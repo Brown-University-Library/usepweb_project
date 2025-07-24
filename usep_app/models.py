@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import collections, json, logging, os, pprint
-from operator import itemgetter  # for a comparator sort
+from operator import itemgetter
+import re  # for a comparator sort
 
 import requests
 from django.conf import settings as settings_project
@@ -173,6 +174,29 @@ def id_sort(doc):
     log.debug( 'tuple keylist after split and break_token, {0}'.format(tuple(keylist) ) )
     return tuple(keylist)
 
+def different_sort(doc):
+    """ Called by models.Collection.get_solr_data() """
+    idno = doc.get('msid_idno', 'no-msid_idno-found')
+    log.debug("different sort: idno, ``%s``" % idno)
+
+    # re.sub("[^0-9]", "", "sdkjh987978asd098as0980a98sd")
+
+    keylist = []
+
+    for x in idno.split("."):
+        log.debug("TOKEN: ``%s``" % x)
+        try:
+            keylist += [int(x)]
+            log.debug("keylist after int conversion, ``%s``" % keylist)
+        except ValueError:
+            log.debug("VALUE ERROR")
+            # tokens = break_token(x)
+            # keylist += tokens
+    
+    log.debug( 'tuple keylist after split and break_token, {0}'.format(tuple(keylist) ) )
+    return tuple(keylist)
+
+
 # Break a mixed numeric/text token into numeric/non-numeric parts. Helper for id_sort
 def break_token(token):
     log.debug( 'starting break_token()' )
@@ -301,16 +325,12 @@ class Collection(object):
         r = requests.get( settings_app.SOLR_URL_BASE, params=payload )
         log.debug( 'solr url, ```%s```' % r.url )
         d = json.loads( r.content.decode('utf-8', 'replace') )
-        key = id_sort 
         log.debug('KEY {0}'.format(key))
-        sorted_doc_list = sorted( d['response']['docs'], key=key )  # sorts the doc-list on dict key 'msid_idno'
+        sorted_doc_list = sorted( d['response']['docs'], key=different_sort )  # sorts the doc-list on dict key 'msid_idno'
         # log.debug( 'sorted_doc_list (first two), ```{}```...'.format(pprint.pformat(sorted_doc_list[0:2])) )
         unsorted_docs = d['response']['docs']
 
         log.debug('Unsorted docs type: {0}'.format(type(unsorted_docs)))
-
-        for d in unsorted_docs:
-            log.debug("DOC!")
         return unsorted_docs
 
     def enhance_solr_data( self, solr_data, url_scheme, server_name ):
