@@ -179,19 +179,18 @@ def different_sort(doc):
     idno = doc.get('msid_idno', 'no-msid_idno-found')
     log.debug("different sort: idno, ``%s``" % idno)
 
-    # re.sub("[^0-9]", "", "sdkjh987978asd098as0980a98sd")
+    # 
 
     keylist = []
 
     for x in idno.split("."):
+        re.sub(r"\D", "", doc)
         log.debug("TOKEN: ``%s``" % x)
         try:
             keylist += [int(x)]
             log.debug("keylist after int conversion, ``%s``" % keylist)
         except ValueError:
-            log.debug("VALUE ERROR")
-            # tokens = break_token(x)
-            # keylist += tokens
+            continue
     
     log.debug( 'tuple keylist after split and break_token, {0}'.format(tuple(keylist) ) )
     return tuple(keylist)
