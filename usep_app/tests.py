@@ -151,8 +151,8 @@ class CollectionViewSortTest( TestCase ):
             {'title': 'CA.Berk.UC.HMA.L.8/4294', 'id': 'CA.Berk.UC.HMA.L.8-4294', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4294'},
             {'title': 'CA.Berk.UC.HMA.L.8/4296', 'id': 'CA.Berk.UC.HMA.L.8-4296', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4296'},
             {'title': 'CA.Berk.HMA.G.8/4985', 'id': 'CA.Berk.UC.HMA.G.8-4985', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4985'},
-            {'title': 'CA.Berk.UC.HMA.L.#97.3.2', 'id': 'CA.Berk.UC.HMA.L.Tmp97.3.2', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '#97.3.2'},
             {'title': 'CA.Berk.UC.HMA.L.#97.3.1', 'id': 'CA.Berk.UC.HMA.L.Tmp97.3.1', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '#97.3.1'},
+            {'title': 'CA.Berk.UC.HMA.L.#97.3.2', 'id': 'CA.Berk.UC.HMA.L.Tmp97.3.2', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '#97.3.2'},
         ]
 
         self.assertEqual(sorted_doc_list, correct_sorted_doc_list)        
