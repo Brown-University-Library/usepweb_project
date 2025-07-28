@@ -142,4 +142,4 @@ class CollectionViewSortTest( TestCase ):
         # Need to get a collection object, then run getsolrdata
         sorted_doc_list = sorted(self.EXAMPLE_DOCS, key=models.id_sort )
         for doc in sorted_doc_list:
-            log.debug(doc)
+            print(doc)
