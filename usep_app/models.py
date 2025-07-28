@@ -199,6 +199,8 @@ class PublicationsPage(models.Model):
 #     parts += [token[idx1:idx2]]
 #     return parts
 
+# Replaces older sort method with updated/simpler version. This ignores all non numeric characters
+# And just sorts on numbers.
 def id_sort(doc):
     """ Called by models.Collection.get_solr_data() """
     idno = doc.get('msid_idno', 'no-msid_idno-found')
@@ -207,9 +209,8 @@ def id_sort(doc):
     keylist = []
 
     for x in idno.split("."):
-        x = re.sub(r"\D", "", x)
+        x = re.sub(r"\D", "", x) # Remove any non-numeric characters
         keylist += [x]
-        log.debug("keylist after int conversion, ``%s``" % keylist)
     
     log.debug( 'tuple keylist after split and break_token, {0}'.format(tuple(keylist) ) )
     return tuple(keylist)
