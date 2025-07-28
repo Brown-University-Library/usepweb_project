@@ -1,5 +1,5 @@
 # PyMySQL==0.10.1
-Django==1.11.29
+Django==4.2.22
 lxml==4.4.1
 mysqlclient==1.4.6
 requests==2.25.1
