@@ -120,3 +120,39 @@ class UrlTest( TestCase ):
         self.assertEqual( bytes, type(response.content) )  # means bytes
         self.assertEqual( 200, response.status_code )  # permanent redirect
         self.assertTrue(  b'Inscription Results' in response.content )
+
+class CollectionViewSortTest( TestCase ):
+    """ Checks docs sorting by ID on collection view. """
+
+    def setUp( self ):
+        # Partial data from real docs in the CA Berkeley collection, in a random order
+        self.EXAMPLE_DOCS = [
+            {'title': 'CA.Berk.UC.HMA.L.8/4286', 'id': 'CA.Berk.UC.HMA.L.8-4286', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4286'},
+            {'title': 'CA.Berk.UC.HMA.L.8/4294', 'id': 'CA.Berk.UC.HMA.L.8-4294', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4294'},
+            {'title': 'CA.Berk.UC.HMA.L.#97.3.2', 'id': 'CA.Berk.UC.HMA.L.Tmp97.3.2', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '#97.3.2'},
+            {'title': 'CA.Berk.HMA.G.8/4985', 'id': 'CA.Berk.UC.HMA.G.8-4985', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4985'},
+            {'title': 'CA.Berk.UC.HMA.L.8/4278', 'id': 'CA.Berk.UC.HMA.L.8-4278', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4278'},
+            {'title': 'CA.Berk.UC.HMA.L.8/4296', 'id': 'CA.Berk.UC.HMA.L.8-4296', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4296'},
+            {'title': 'CA.Berk.UC.HMA.L.8/3125', 'id': 'CA.Berk.UC.HMA.L.8-3125', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/3125'},
+            {'title': 'CA.Berk.UC.HMA.L.8.71.7767', 'id': 'CA.Berk.UC.HMA.L.8.71.7767', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8.71.7767'},
+            {'title': 'CA.Berk.UC.HMA.L.#97.3.1', 'id': 'CA.Berk.UC.HMA.L.Tmp97.3.1', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '#97.3.1'},
+            {'title': 'CA.Berk.UC.HMA.L.8/4285', 'id': 'CA.Berk.UC.HMA.L.8-4285', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4285'}
+        ]
+
+    def test_sorting(self):
+        # Need to get a collection object, then run getsolrdata
+        sorted_doc_list = sorted(self.EXAMPLE_DOCS, key=models.id_sort )
+        correct_sorted_doc_list = [
+            {'title': 'CA.Berk.UC.HMA.L.8.71.7767', 'id': 'CA.Berk.UC.HMA.L.8.71.7767', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8.71.7767'},
+            {'title': 'CA.Berk.UC.HMA.L.8/3125', 'id': 'CA.Berk.UC.HMA.L.8-3125', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/3125'},
+            {'title': 'CA.Berk.UC.HMA.L.8/4278', 'id': 'CA.Berk.UC.HMA.L.8-4278', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4278'},
+            {'title': 'CA.Berk.UC.HMA.L.8/4285', 'id': 'CA.Berk.UC.HMA.L.8-4285', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4285'},
+            {'title': 'CA.Berk.UC.HMA.L.8/4286', 'id': 'CA.Berk.UC.HMA.L.8-4286', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4286'},
+            {'title': 'CA.Berk.UC.HMA.L.8/4294', 'id': 'CA.Berk.UC.HMA.L.8-4294', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4294'},
+            {'title': 'CA.Berk.UC.HMA.L.8/4296', 'id': 'CA.Berk.UC.HMA.L.8-4296', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4296'},
+            {'title': 'CA.Berk.HMA.G.8/4985', 'id': 'CA.Berk.UC.HMA.G.8-4985', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '8/4985'},
+            {'title': 'CA.Berk.UC.HMA.L.#97.3.1', 'id': 'CA.Berk.UC.HMA.L.Tmp97.3.1', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '#97.3.1'},
+            {'title': 'CA.Berk.UC.HMA.L.#97.3.2', 'id': 'CA.Berk.UC.HMA.L.Tmp97.3.2', 'msid_region': 'CA', 'msid_settlement': 'Berk', 'msid_institution': 'UC', 'msid_repository': 'HMA', 'msid_idno': '#97.3.2'},
+        ]
+
+        self.assertEqual(sorted_doc_list, correct_sorted_doc_list)        
