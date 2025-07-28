@@ -120,3 +120,10 @@ class UrlTest( TestCase ):
         self.assertEqual( bytes, type(response.content) )  # means bytes
         self.assertEqual( 200, response.status_code )  # permanent redirect
         self.assertTrue(  b'Inscription Results' in response.content )
+
+class CollectionViewSortTest( TestCase ):
+    """ Checks docs sorting by ID on collection view. """
+
+    def test_sorting(self):
+        # Need to get a collection object, then run getsolrdata
+        pass
