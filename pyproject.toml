@@ -1,0 +1,22 @@
+[project]
+name = "site-checker-project"
+version = "0.0.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "Django~=1.11.0",
+    "lxml~=4.4.0",
+    "requests~=2.25.0",
+    "git+https://github.com/birkin/shellvars-py.git",
+
+]
+
+[dependency-groups]
+local = []
+staging = [
+    "mysqlclient==1.4.6",
+]
+prod = [
+    "mysqlclient==1.4.6",
+]
