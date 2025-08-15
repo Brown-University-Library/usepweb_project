@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-
-
 import collections, json, logging, os, pprint
-from operator import itemgetter  # for a comparator sort
+from operator import itemgetter
+import re  # for a comparator sort
 
 import requests
 from django.conf import settings as settings_project
@@ -43,13 +42,13 @@ class FlatCollection( models.Model ):
 
     def save(self):
         """ Auto-builds collection_code from component parts if they exist. """
-        if len( self.collection_code.strip() ) == 0:
+        if int(len( self.collection_code.strip() )) == 0:
             new_collection_code = self.region_code.strip()
-            if len( self.settlement_code.strip() ) > 0:
+            if int(len( self.settlement_code.strip() )) > 0:
                 new_collection_code = '%s.%s' % ( new_collection_code, self.settlement_code.strip() )
-            if len( self.institution_code.strip() ) > 0:
+            if int(len( self.institution_code.strip() )) > 0:
                 new_collection_code = '%s.%s' % ( new_collection_code, self.institution_code.strip() )
-            if len( self.repository_code.strip() ) > 0:
+            if int(len( self.repository_code.strip() )) > 0:
                 new_collection_code = '%s.%s' % ( new_collection_code, self.repository_code.strip() )
             self.collection_code = new_collection_code
         super(FlatCollection, self).save() # Call the "real" save() method
@@ -84,7 +83,6 @@ class FlatCollection( models.Model ):
 
 
 ### django-db models for static pages ###
-
 
 class AboutPage(models.Model):
     title_page = models.CharField( blank=True, max_length=100 )
@@ -141,57 +139,81 @@ class PublicationsPage(models.Model):
 # Function to pass to sorted() to sort the list of documents by weird free-form ids
 # essentially splits them into numeric and non-numeric keys and returns whatever
 # set it was able to break up
-def id_sort(doc):
-    """ Called by models.Collection.get_solr_data() """
-    # idno = doc[u'msid_idno']
-    idno = doc.get('msid_idno', 'no-msid_idno-found')
+# def id_sort_old_version(doc):
+#     """ Called by models.Collection.get_solr_data() """
+#     # idno = doc[u'msid_idno']
+#     idno = doc.get('msid_idno', 'no-msid_idno-found')
+#     log.debug("id_sort: idno, ``%s``" % idno)
 
-    # IN THE FUTURE:
-    # add to this string to add new characters to split tokens over (splits over "." by default)
-    split_characters = "-,/"
-    # add to this string to add new characters that should be removed (e.g. "#")
-    remove_characters = "#"
+#     # IN THE FUTURE:
+#     # add to this string to add new characters to split tokens over (splits over "." by default)
+#     split_characters = "-,/"
+#     # add to this string to add new characters that should be removed (e.g. "#")
+#     remove_characters = "#"
 
-    for c in split_characters:
-        idno = idno.replace(c, ".")
-    for c in remove_characters:
-        idno = idno.replace(c, "")
+#     for c in split_characters:
+#         idno = idno.replace(c, ".")
+#     for c in remove_characters:
+#         idno = idno.replace(c, "")
 
-    keylist = []
-    for x in idno.split("."):
-        try:
-            keylist += [int(x)]
-        except ValueError:
+#     log.debug( 'idno after split and remove, ``%s``' % idno )
 
-            tokens = break_token(x)
-            keylist += tokens
+#     keylist = []
+#     log.debug( 'keylist is definitely a list, ``%s``' % type(keylist) )
 
-    return tuple(keylist)
+#     for x in idno.split("."):
+#         log.debug("TOKEN: ``%s``" % x)
+#         try:
+#             keylist += [int(x)]
+#             log.debug("keylist after int conversion, ``%s``" % keylist)
+#         except ValueError:
+#             log.debug("VALUE ERROR")
+#             tokens = break_token(x)
+#             keylist += tokens
+    
+#     log.debug( 'tuple keylist after split and break_token, {0}'.format(tuple(keylist) ) )
+#     return tuple(keylist)
 
 # Break a mixed numeric/text token into numeric/non-numeric parts. Helper for id_sort
-def break_token(token):
-    idx1 = 0
-    idx2 = 0
-    parts = []
-    numeric = (token[0] in string.digits) # True if we start with a numeric token, false otherwise
+# def break_token(token):
+#     log.debug( 'starting break_token()' )
+#     idx1 = 0
+#     idx2 = 0
+#     parts = []
+#     numeric = (token[0] in string.digits) # True if we start with a numeric token, false otherwise
 
-    # Loop through string and add subtokens to parts as necessary
-    for c in token:
-        condition = token[idx2] in string.digits
-        if not numeric:
-            condition = not condition
+#     # Loop through string and add subtokens to parts as necessary
+#     for c in token:
+#         condition = token[idx2] in string.digits
+#         if not numeric:
+#             condition = not condition
 
+#         if condition:
+#             idx2 += 1
+#         else:
+#             parts += [int(token[idx1:idx2])] if numeric else [token[idx1:idx2]]
+#             idx1 = idx2
+#             idx2 += 1
+#             numeric = not numeric
 
-        if condition:
-            idx2 += 1
-        else:
-            parts += [int(token[idx1:idx2])] if numeric else [token[idx1:idx2]]
-            idx1 = idx2
-            idx2 += 1
-            numeric = not numeric
+#     parts += [token[idx1:idx2]]
+#     return parts
 
-    parts += [token[idx1:idx2]]
-    return parts
+# Replaces older sort method with updated/simpler version. This ignores all non numeric characters
+# And just sorts on numbers.
+def id_sort(doc):
+    """ Called by models.Collection.get_solr_data() """
+    idno = doc.get('msid_idno', 'no-msid_idno-found')
+    log.debug("different sort: idno, ``%s``" % idno)
+
+    keylist = []
+
+    for x in idno.split("."):
+        x = re.sub(r"\D", "", x) # Remove any non-numeric characters
+        keylist += [x]
+    
+    log.debug( 'tuple keylist after split and break_token, {0}'.format(tuple(keylist) ) )
+    return tuple(keylist)
 
 def separate_into_languages(docs):
 
@@ -237,7 +259,6 @@ def separate_into_languages(docs):
         ('unknown', 'Unknown')
     ]
     language_pairs = collections.OrderedDict( language_pairs_list )
-    # log.debug( 'language_pairs, ``%s``' % pprint.pformat(language_pairs) )
 
     ## create result-dict -- TODO: since I need an ordered-dict, change this to create the list of tuples to avoid the re-work of the dict.
 
@@ -249,9 +270,6 @@ def separate_into_languages(docs):
             result[language]['docs'] += [doc]
         else:
             result[language] = {'docs': [doc], 'display': language_pairs.get(language, language)}
-    # log.debug( 'language separation result, ``%s``' % result )
-    # log.debug( 'type(result), ``%s``' % type(result) )
-    # log.debug( 'result.keys(), ``%s``' % result.keys() )
 
     ## convert result-dict to ordered-dict
     desired_order_keys = []
@@ -259,11 +277,7 @@ def separate_into_languages(docs):
         language_code = language_tuple[0]
         desired_order_keys.append( language_code )
     result_intermediate_tuples = [ (key, result.get(key, None)) for key in desired_order_keys ]
-    # log.debug( 'result_intermediate_tuples, ``%s``' % pprint.pformat(result_intermediate_tuples) )
     new_result = collections.OrderedDict( result_intermediate_tuples )
-    # log.debug( 'language separation new_result, ``%s``' % new_result )
-    # log.debug( 'type(new_result), ``%s``' % type(new_result) )
-    # log.debug( 'new_result.keys(), ``%s``' % new_result.keys() )
 
     ## Actual display pairs used for convenience
     display_pairs_intermediate_tuples = []
@@ -272,7 +286,6 @@ def separate_into_languages(docs):
         if data != None:
             display_text = data['display']
             display_pairs_intermediate_tuples.append( (language_code, display_text) )
-    # log.debug( 'display_pairs_intermediate_tuples, ``%s``' % display_pairs_intermediate_tuples )
     display_pairs = collections.OrderedDict( display_pairs_intermediate_tuples )
 
     log.debug( 'returning three-element tuple of (dict, int, dict)' )
@@ -298,6 +311,7 @@ class Collection(object):
         d = json.loads( r.content.decode('utf-8', 'replace') )
         sorted_doc_list = sorted( d['response']['docs'], key=id_sort )  # sorts the doc-list on dict key 'msid_idno'
         log.debug( 'sorted_doc_list (first two), ```{}```...'.format(pprint.pformat(sorted_doc_list[0:2])) )
+
         return sorted_doc_list
 
     def enhance_solr_data( self, solr_data, url_scheme, server_name ):
@@ -308,7 +322,7 @@ class Collection(object):
         for entry in solr_data:
             image_url = None
             if 'graphic_name' in list(entry.keys()):
-                log.debug("enhance_solr_data graphic_name", entry['graphic_name'], entry['graphic_name'].startswith('http'))
+                log.debug("enhance_solr_data graphic_name, {0}, {1}".format(entry['graphic_name'], entry['graphic_name'].startswith('http')))
                 if entry['graphic_name'].startswith('https:') or entry['graphic_name'].startswith('http:'):
                     image_url = entry['graphic_name']
                 else:
@@ -444,7 +458,6 @@ class Publications(object):
 
     def getPubData(self):
         """Gets solr publication data for self.buildPubLists()"""
-        #print "models.py: Publications: getPubData"
 
         sh = SolrHelper()
         payload = dict( list(sh.default_params.items()) + list({
@@ -453,10 +466,8 @@ class Publications(object):
             'fl': 'id, bib_ids, bib_ids_types, bib_titles, bib_titles_all, bib_authors, status' }.items())
             )
 
-        #print "\tAbout to make request!"
         r = requests.get( settings_app.SOLR_URL_BASE, params=payload )
 
-        #print "\tReturned from the get request"
         log.debug( 'publications solr call: %s' % r.url )
         self.pubs_solr_url = r.url
         self.pubs_solr_response = r.content.decode( 'utf-8', 'replace' )
@@ -466,30 +477,18 @@ class Publications(object):
         log.debug( 'publications solr query result dict["response"]["numFound"]: %s' % jdict['response']['numFound'] )
         log.debug( 'publications solr query result dict["response"]["docs"][0]: %s' % jdict['response']['docs'][0:5] )
         self.pubs_entries = jdict['response']['docs']
-        # log.debug( u'self.pubs_entries: %s' % self.pubs_entries )
 
     def buildPubLists(self):
         """Builds list of publications grouped by type."""
-        # log.debug( u'self.pubs_entries: %s' % self.pubs_entries )
         log.debug( 'len( self.pubs_entries ): %s' % len( self.pubs_entries ) )
         corpora_dict = {}; journal_dict = {}; monograph_dict = {}  # temp holders
 
-        # #print len(self.pubs_entries)
-        # #print self.pubs_entries.__class__
-        # #print str(self.pubs_entries[1:4])
-
         for entry in self.pubs_entries:  # an entry can contain multiple bibs
-            # log.debug( u'entry being processed: %s' % entry )
-            ## make separate bib entries
-
-            # #print "\n" + str(entry)
-
             temp_bibs = []
             last_bib_type = None
             for i, bib_id in enumerate( entry['bib_ids'] ):
                 try:
                     last_bib_type = entry['bib_ids_types'][i]  # first should always succeed
-                    #print last_bib_type + "; bib_id: " + bib_id + "; i: " + i
                 except:
                     pass
                 try:
@@ -530,11 +529,6 @@ class Publications(object):
                     # u'bib_author': bib_author,
                     # u'bib_id': bib_id
                     } )
-            # log.debug( u'temp_bibs: %s' % temp_bibs )
-
-            # #print len(temp_bibs)
-            # #print temp_bibs.__class__
-            # #print str(temp_bibs[1:4])
 
 
             ## categorize by bib_type
@@ -562,8 +556,6 @@ class Publications(object):
                         monograph_dict[ bib['bib_title'] ].append( bib['id'] )
                     else:
                         monograph_dict[ bib['bib_title'] ] = [ bib['id'] ]
-
-                # log.debug( u'monograph_dict is now: %s' % monograph_dict )
         ## store
         self.corpora_dict = corpora_dict
         self.corpora = sorted( self.corpora_dict.keys() )
@@ -583,8 +575,6 @@ class Publications(object):
         # print ("\n'Classical Attic Tombstones' in self.monographs_dict.keys() " + str('Classical Attic Tombstones' in self.monographs_dict.keys()))
         # print str([j for j, element in enumerate(self.monographs_dict.keys()) if element == 'Classical Attic Tombstones'])
         # print str(self.monographs_dict[('Classical Attic Tombstones')])
-
-
 
         # log.debug( u'corpora list before sort: %s' % self.corpora )
         return
