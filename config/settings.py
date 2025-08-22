@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import pathlib
 from dotenv import find_dotenv, load_dotenv
 
 import json, logging, os
