@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 
-
+import pathlib
+from dotenv import find_dotenv, load_dotenv
 
 import json, logging, os
 
+
+## load envars ------------------------------------------------------
+dotenv_path = pathlib.Path(__file__).resolve().parent.parent.parent / '.env'
+assert dotenv_path.exists(), f'file does not exist, ``{dotenv_path}``'
+load_dotenv(find_dotenv(str(dotenv_path), raise_error_if_not_found=True), override=True)
 
 ## Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # BASE_DIR = os.path.dirname(os.path.dirname(__file__))
