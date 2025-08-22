@@ -8,7 +8,7 @@ dependencies = [
     "Django==1.11.29",
     "lxml==4.4.1",
     "requests==2.25.1",
-    "python-dotenv~=1.0.0",
+    "shellvars-py @ git+https://github.com/birkin/shellvars-py.git",
 ]
 
 [dependency-groups]
