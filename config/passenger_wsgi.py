@@ -1,7 +1,8 @@
-import os, pprint, sys
-import shellvars
-from django.core.wsgi import get_wsgi_application
+import os
+import socket
+import sys
 
+from django.core.wsgi import get_wsgi_application
 
 # print( 'the initial env, ```{}```'.format( pprint.pformat(dict(os.environ)) ) )
 
@@ -10,15 +11,20 @@ ENV_SETTINGS_FILE = os.environ['USEPWEB_ENV']
 # source $USEPWEB__SETTINGS  # set in `httpd/passenger.conf`, and `env/bin/activate`
 
 ## update path
-sys.path.append( PROJECT_DIR_PATH )
+sys.path.append(PROJECT_DIR_PATH)
 
 ## reference django settings
-os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings'  # so django can access its settings
+os.environ["DJANGO_SETTINGS_MODULE"] = (
+    "config.settings"  # so django can access its settings
+)
 
-## load up env vars
-var_dct = shellvars.get_vars( ENV_SETTINGS_FILE )
-for ( key, val ) in list(var_dct.items()):
-   os.environ[key.decode('utf-8')] = val.decode('utf-8')
+# ## load up env vars if on dl* or pl* server
+# server_name = socket.gethostname()
+# print(f"server_name: ``{server_name}``")
+# if server_name.startswith(("dl", "pl")):
+#     var_dct = shellvars.get_vars(ENV_SETTINGS_FILE)
+#     for key, val in list(var_dct.items()):
+#         os.environ[key.decode("utf-8")] = val.decode("utf-8")
 
 # print( 'the final env, ```{}```'.format( pprint.pformat(dict(os.environ)) ) )
 
