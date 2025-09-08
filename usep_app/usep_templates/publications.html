@@ -41,7 +41,11 @@
       <ul id="corpora">
         <h1>Corpora</h1>
         {% for item in corpora_list %}
-        <p><a href="{% url 'publication_url' publication=item %}">{{ item }}</a></p> {% comment %} publication_url item renders to: http://domain/projects/usep/publication/the_id/'{% endcomment %}
+
+        <script>
+          console.log(item)
+        </script>
+        <p><a href="{% url 'publication_url' item %}">{{ item }}</a></p> {% comment %} publication_url item renders to: http://domain/projects/usep/publication/the_id/'{% endcomment %}
         {% endfor %}
       </ul>
 
