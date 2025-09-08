@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-from django.conf.urls import include, path, re_path
+from django.conf.urls import include, re_path
 from django.contrib import admin
 from django.views.generic import RedirectView
 from usep_app import search, views
