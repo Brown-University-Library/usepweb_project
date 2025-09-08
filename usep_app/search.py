@@ -7,7 +7,7 @@
 import datetime, json, logging, pprint
 import requests
 from django.conf import settings as settings_project
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, render
 from django.views.decorators.cache import cache_page
