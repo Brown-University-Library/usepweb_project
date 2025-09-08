@@ -20,7 +20,7 @@ urlpatterns = [
     re_path( r'^usep/inscription/(?P<inscription_id>[^/]+)/$', views.display_inscription, name='inscription_url' ),
 
     re_path( r'^usep/publications/$',  views.publications, name='publications_url' ),
-    re_path( r'^usep/publication/(?P<publication>[^/]+)/$', views.pub_children, name='publication_url' ),
+    re_path( r'^usep/publication/*$', views.pub_children, name='publication_url' ), # TODO should be more specific
 
     re_path( r'^usep/texts/$',  views.texts, name='texts_url' ),
     re_path( r'^usep/links/$',  views.links, name='links_url' ),
@@ -28,7 +28,7 @@ urlpatterns = [
     re_path( r'^usep/contact/$',  views.contact, name='contact_url' ),
 
     re_path( r'^usep/search/$', search.search_form, name='search_url'),
-    re_path( r'^usep/search/results/*$', search.results, name='search_results_url'),
+    re_path( r'^usep/search/results/*$', search.results, name='search_results_url'), # TODO should be more specific
 
     re_path( r'^usep/$',  RedirectView.as_view(pattern_name='collections_url') ),
 
