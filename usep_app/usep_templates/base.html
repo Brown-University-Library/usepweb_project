@@ -18,7 +18,6 @@
 
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>{% block head_title %}HOLDER{% endblock head_title %}</title>
-    <!-- {# <link type="text/css" {% block head_media_href %}href="{{ STATIC_URL }}usep/css/style.css"{% endblock head_media_href %} media="all" rel="stylesheet" /> #} -->  <!-- Djano 1.9 syntax -- TODO: remove after 2021-March-01 -->
     <link rel="stylesheet" type="text/css" media="all" {% block head_media_href %} href="{% static 'usep/css/style.css'%}" {% endblock head_media_href %}  />
 
     {% block in_page_css %}{% endblock in_page_css %}
@@ -34,20 +33,15 @@
 
     <div id="header">
       {% block header %}
-      <!-- <a href="{% url 'collections_url' %}"><img id="useplogo" src="{{ STATIC_URL }}usep/css/gfx/header_brickstamp.png" alt="U.S. Epigraphy Project" title="U.S. Epigraphy Project home page"/></a> -->
       <a href="{% url 'collections_url' %}"><img id="useplogo" src="{% static 'usep/css/gfx/header_brickstamp.png'%}" alt="U.S. Epigraphy Project" title="U.S. Epigraphy Project home page"/></a>
     	<div id="headerlinks">
             <div>
-                <!-- <a href="{% url 'search_url' %}"><img src="{{ STATIC_URL }}usep/css/gfx/button_search.png" /></a> -->
                 <a href="{% url 'search_url' %}"><img src="{% static 'usep/css/gfx/button_search.png'%}" /></a>
-                <!-- <a href="{% url 'collections_url' %}"><img src="{{ STATIC_URL }}usep/css/gfx/button_collections.png" /></a> -->
                 <a href="{% url 'collections_url' %}"><img src="{% static 'usep/css/gfx/button_collections.png'%}" /></a>
-                <!-- <a href="{% url 'publications_url' %}"><img src="{{ STATIC_URL }}usep/css/gfx/button_publications.png" /></a> <br /> -->
-			    <a href="{% url 'publications_url' %}"><img src="{% static 'usep/css/gfx/button_publications.png'%}" /></a> <br />
+			          <a href="{% url 'publications_url' %}"><img src="{% static 'usep/css/gfx/button_publications.png'%}" /></a> <br />
             </div>
             <div>
-          <!--      <a href="{% url 'texts_url' %}">Texts</a>
-      			<a href="{% url 'links_url' %}">Epigraphy links</a> |-->
+      			<!-- <a href="{% url 'links_url' %}">Epigraphy links</a> -->
       			<a href="{% url 'about_url' %}">About</a> |
       			<a href="{% url 'contact_url' %}">Contact</a>
             </div>
