@@ -2,8 +2,7 @@
 
 from __future__ import unicode_literals
 
-# from django.conf.urls import patterns, include, url
-from django.conf.urls import include, url
+from django.conf.urls import url
 from django.contrib import admin
 from django.views.generic import RedirectView
 from usep_app import search, views
@@ -42,6 +41,6 @@ urlpatterns = [
     ## other...
 
     url( r'^usep/admin/links/$',  views.admin_links, name='admn_links_url' ),
-    url( r'^usep/admin/', include(admin.site.urls) ),
+    url( r'^usep/admin/', admin.site.urls),
 
     ]
