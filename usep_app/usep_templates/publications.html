@@ -85,7 +85,7 @@
       var processor = Saxon.run({
           stylesheet: target_stylesheet,
           source:     target_source,
-          parameters: { url: ('{% url "publication_url" " " %}'.slice(1, -4)), new:"yes"  }
+          parameters: { url: ('{% url "publication_url" %}'.slice(1, -4)), new:"yes"  }
       });
 
       processor.setSuccess( fade("out", document.getElementById("loading")) );
