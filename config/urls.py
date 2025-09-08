@@ -19,7 +19,7 @@ urlpatterns = [
     re_path( r'^usep/inscription/(?P<inscription_id>[^/]+)/$', views.display_inscription, name='inscription_url' ),
 
     re_path( r'^usep/publications/$',  views.publications, name='publications_url' ),
-    re_path( r'^usep/publication/*$', views.pub_children, name='publication_url' ), # TODO not working
+    # re_path( r'^usep/publication/*$', views.pub_children, name='publication_url' ), # TODO not working
 
     re_path( r'^usep/texts/$',  views.texts, name='texts_url' ), # TODO nothing on this page, maybe should remove?
     re_path( r'^usep/links/$',  views.links, name='links_url' ), 
@@ -37,6 +37,6 @@ urlpatterns = [
 
     ## other...
     re_path( r'^usep/admin/links/$',  views.admin_links, name='admn_links_url' ),
-    path('usep/admin/', admin.site.urls), # TODO broken
+    path('usep/admin/', admin.site.urls),
 
     ]
