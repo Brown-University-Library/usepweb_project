@@ -11,7 +11,7 @@ from django.db import models
 from django.utils.encoding import smart_str
 from usep_app import settings_app
 
-from django.utils.http import urlencode
+from  urllib.parse import urlencode
 
 from lxml import etree
 
