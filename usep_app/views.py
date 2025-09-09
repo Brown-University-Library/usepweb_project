@@ -312,7 +312,6 @@ def links( request ):
     'page_data': page_data,
     'settings_app': settings_app }
   return render( request, 'usep_templates/static.html', page_dct )
-  # return render_to_response( u'usep_templates/static.html', page_dct )
 
 def about( request ):
   page_data = AboutPage.objects.all()[0]  # just one record
@@ -320,7 +319,6 @@ def about( request ):
     'page_data': page_data,
     'settings_app': settings_app }
   return render( request, 'usep_templates/static.html', page_dct )
-  # return render_to_response( u'usep_templates/static.html', page_dct )
 
 def contact( request ):
   page_data = ContactsPage.objects.all()[0]  # just one record
@@ -328,4 +326,3 @@ def contact( request ):
     'page_data': page_data,
     'settings_app': settings_app }
   return render( request, 'usep_templates/static.html', page_dct )
-  # return render_to_response( u'usep_templates/static.html', page_dct )

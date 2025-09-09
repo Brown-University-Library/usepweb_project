@@ -9,7 +9,7 @@ import requests
 from django.conf import settings as settings_project
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect
-from django.shortcuts import render_to_response, render
+from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 from usep_app import settings_app, models
 
