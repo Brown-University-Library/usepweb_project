@@ -81,10 +81,11 @@
   console.log( "target_stylesheet, " + target_stylesheet );
   console.log( "target_source, " + target_source );
   var onSaxonLoad = function() {
+      const urlBase = "{% url 'publication_url' publication='__PUB__' %}".replace("__PUB__/", "");
       var processor = Saxon.run({
           stylesheet: target_stylesheet,
           source:     target_source,
-          parameters: { url: ('{% url "publication_url" item %}'.slice(1, -4)), new:"yes"  }
+          parameters: { url: urlBase, new:"yes"  }
       });
 
       processor.setSuccess( fade("out", document.getElementById("loading")) );
@@ -92,3 +93,5 @@
 </script>
 
 {% endblock page_js %}
+
+
