@@ -27,7 +27,7 @@ urlpatterns = [
     re_path( r'^usep/contact/$',  views.contact, name='contact_url' ),
 
     re_path( r'^usep/search/$', search.search_form, name='search_url'),
-    re_path( r'^usep/search/results/?$', search.results, name='search_results_url'), # TODO should be more specific
+    re_path( r'^usep/search/results/?$', search.results, name='search_results_url'),
 
     re_path( r'^usep/$',  RedirectView.as_view(pattern_name='collections_url') ),
 
