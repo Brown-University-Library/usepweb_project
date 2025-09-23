@@ -37,29 +37,28 @@
   <div id="loading" style="background-image: url('{{ custom_static_url }}usep/loading.png');"></div>
   <div id="main" style="display:visible;">
 
-   <!--  <div id="testing">
+   <!-- <div id="testing">
       <ul id="corpora">
         <h1>Corpora</h1>
         {% for item in corpora_list %}
-        <p><a href="{% url publication_url item %}">{{ item }}</a></p> {% comment %} publication_url item renders to: http://domain/projects/usep/publication/the_id/'{% endcomment %}
+        <p><a href="{% url 'publication_url' item %}">{{ item }}</a></p> {% comment %} publication_url item renders to: http://domain/projects/usep/publication/the_id/'{% endcomment %}
         {% endfor %}
       </ul>
 
       <ul id="journals">
         <h1>Journals</h1>
         {% for item in journals_list %}
-        <p><a href="{% url publication_url item %}">{{ item }}</a></p>
+        <p><a href="{% url 'publication_url' publication=item %}">{{ item }}</a></p>
         {% endfor %}
       </ul>
 
       <ul id="monographs">
         <h1>Monographs</h1>
         {% for item in monographs_list %}
-        <p><a href="{% url publication_url item %}">{{ item }}</a></p>
+        <p><a href="{% url 'publication_url' publication=item %}">{{ item }}</a></p>
         {% endfor %}
       </ul>
-    </div>
- -->
+    </div> -->
 
     <div id="container" style="position:relative; left:-20px;"></div>
 
@@ -82,10 +81,11 @@
   console.log( "target_stylesheet, " + target_stylesheet );
   console.log( "target_source, " + target_source );
   var onSaxonLoad = function() {
+      const urlBase = "{% url 'publication_url' publication='__PUB__' %}".replace("__PUB__/", "");
       var processor = Saxon.run({
           stylesheet: target_stylesheet,
           source:     target_source,
-          parameters: { url: ('{% url "publication_url" " " %}'.slice(1, -4)), new:"yes"  }
+          parameters: { url: urlBase, new:"yes"  }
       });
 
       processor.setSuccess( fade("out", document.getElementById("loading")) );
@@ -93,3 +93,5 @@
 </script>
 
 {% endblock page_js %}
+
+

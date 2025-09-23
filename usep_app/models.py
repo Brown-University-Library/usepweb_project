@@ -6,12 +6,12 @@ import re  # for a comparator sort
 
 import requests
 from django.conf import settings as settings_project
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.utils.encoding import smart_str
 from usep_app import settings_app
 
-from django.utils.http import urlencode
+from  urllib.parse import urlencode
 
 from lxml import etree
 
