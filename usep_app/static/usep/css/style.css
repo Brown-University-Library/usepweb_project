@@ -19,7 +19,7 @@ b1b1b1	light grey
 	--darker-cream: #dedcd1;
 	--grey: #424242;
 	--light-grey: #b1b1b1;
-	--dark-teal: #4b7975;
+	--dark-teal: #4a7571;
 	--teal: #549390;
 	--light-teal: #7badac;
 }
@@ -52,7 +52,7 @@ p {
 
 h1 {
 	font-size:2.1em;
-	color:#4b7975;
+	color:var(--dark-teal);
 	text-transform:uppercase;
 	font-family:georgia,palatino,serif;
 	font-weight:normal;
@@ -72,7 +72,7 @@ h2 {
 
 h3 {
 	font-size:1.2em;
-	color:#4b7975;
+	color:var(--dark-teal);
 	text-transform:uppercase;
 	font-family:georgia,palatino,serif;
 	font-weight:normal;
@@ -81,13 +81,13 @@ h3 {
 
 a:link, a:visited {
 	font-weight:normal;
-	color : #4b7975;
+	color : var(--dark-teal);
 	text-decoration : none;
 	}
 
 a:hover, a:active {
 	font-weight:normal;
-	color : #4b7975;
+	color : var(--dark-teal);
 	text-decoration : none;
 	}
 
