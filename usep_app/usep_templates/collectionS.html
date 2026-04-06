@@ -7,7 +7,7 @@
 {% block list_of_states %}
 
 <!-- this will break when more countries than italy are added -->
-  <div id="listofstates">
+  <nav id="listofstates" aria-label="Collections regions">
     <div id="listrow1" style="text-align:left; padding-left:1em;">
       USA:
         {% for code in region_codes %}
@@ -26,14 +26,19 @@
 
     {% endfor %}
   </div>
-  </div>
+  </nav>
 {% endblock list_of_states %}
 
 {% block content %}
 
   <div id="map">
     <p>
-      <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1eoaaaDmkJRXf8MJvnFPg92j89mQTXvFD" width="640" height="480"></iframe>
+      <iframe
+        src="https://www.google.com/maps/d/u/0/embed?mid=1eoaaaDmkJRXf8MJvnFPg92j89mQTXvFD"
+        width="640"
+        height="480"
+        title="Map of USEP collections"
+      ></iframe>
     </p>
     <p>
       <small>View <a href="https://drive.google.com/open?id=1eoaaaDmkJRXf8MJvnFPg92j89mQTXvFD&usp=sharing">USEP Collections</a> in a full screen map</small>
@@ -44,41 +49,36 @@
 
     {% regroup all_collections_dictionaries by region_name as region_list %}  {% comment %} note: no 'end_regroup' {% endcomment %}
 
-      <h1>Italy</h1>
+      <h2>Italy</h2>
       <hr>
      {% for region_name in region_list %}
 
       {%if "ITA" in region_name.list.0.region_code %}
 
-     {% for item in region_name.list %}
-
-
+      {% for item in region_name.list %}
         {% if forloop.first %}
-          <a name="{{ item.region_code|lower }}">
+          <h3 id="{{ item.region_code|lower }}">{{ region_name.grouper }}</h3>
         {% endif %}
-
       {% endfor %}
-            <h2>{{ region_name.grouper }}</h2>
-          </a>
 
       {% comment %} ## Collections ## {% endcomment %}
       {% for item in region_name.list %}
-        <p class="description">
+        <div class="description">
           <a href="../collections/{{ item.collection_code }}/">{{ item.collection_code }}</a>
-          <a class="js-link" href="#">[More...]</a>
+          <a class="js-link" href="#{{ item.collection_code|lower }}-details" aria-controls="{{ item.collection_code|lower }}-details">[More...]</a>
           <br/>
           <a target="_blank" href="{{ item.collection_url }}">{{ item.collection_name }}<br/>{{ item.collection_address }}</a>
-          <div class="js-info">
+          <div class="js-info" id="{{ item.collection_code|lower }}-details">
             <p>{{ item.collection_description|safe }}</p>
           </div>
-        </p>
+        </div>
       {% endfor %}
 
     {% endif %}
 
         {% endfor %}
 
-             <h1>USA</h1>
+             <h2>USA</h2>
       <hr>
 
     {% for region_name in region_list %}
@@ -87,26 +87,22 @@
 
       {% comment %} ## Region-name with anchor ## {% endcomment %}
       {% for item in region_name.list %}
-
         {% if forloop.first %}
-          <a name="{{ item.region_code|lower }}">
+          <h3 id="{{ item.region_code|lower }}">{{ region_name.grouper }}</h3>
         {% endif %}
-
       {% endfor %}
-            <h2>{{ region_name.grouper }}</h2>
-          </a>
 
       {% comment %} ## Collections ## {% endcomment %}
       {% for item in region_name.list %}
-        <p class="description">
+        <div class="description">
           <a href="../collections/{{ item.collection_code }}/">{{ item.collection_code }}</a>
-          <a class="js-link" href="#">[More...]</a>
+          <a class="js-link" href="#{{ item.collection_code|lower }}-details" aria-controls="{{ item.collection_code|lower }}-details">[More...]</a>
           <br/>
           <a target="_blank" href="{{ item.collection_url }}">{{ item.collection_name }}<br/>{{ item.collection_address }}</a>
-          <div class="js-info">
+          <div class="js-info" id="{{ item.collection_code|lower }}-details">
             <p>{{ item.collection_description|safe }}</p>
           </div>
-        </p>
+        </div>
       {% endfor %}
 
       {% endif %}
@@ -116,7 +112,7 @@
 
   </div> <!-- end div class="region" -->
   <!-- <div id="admin" style="position: absolute; right: 10px;"><a href="{{ login_url }}">admin</div> -->
-  <div id="admin" style="position: absolute; right: 10px;"><a href="{{ admin_links_url }}">admin</div>
+  <div id="admin" style="position: absolute; right: 10px;"><a href="{{ admin_links_url }}">admin</a></div>
 {% endblock content %}
 
 {% block page_js %}

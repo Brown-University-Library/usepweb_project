@@ -19,8 +19,8 @@ b1b1b1	light grey
 	--darker-cream: #dedcd1;
 	--grey: #424242;
 	--light-grey: #b1b1b1;
-	--dark-teal: #4b7975;
-	--teal: #549390;
+	--dark-teal: #3f6662;
+	--teal: #3e7a76;
 	--light-teal: #7badac;
 }
 
@@ -52,7 +52,7 @@ p {
 
 h1 {
 	font-size:2.1em;
-	color:#4b7975;
+	color:var(--dark-teal);
 	text-transform:uppercase;
 	font-family:georgia,palatino,serif;
 	font-weight:normal;
@@ -72,7 +72,7 @@ h2 {
 
 h3 {
 	font-size:1.2em;
-	color:#4b7975;
+	color:var(--dark-teal);
 	text-transform:uppercase;
 	font-family:georgia,palatino,serif;
 	font-weight:normal;
@@ -81,13 +81,13 @@ h3 {
 
 a:link, a:visited {
 	font-weight:normal;
-	color : #4b7975;
+	color : var(--dark-teal);
 	text-decoration : none;
 	}
 
 a:hover, a:active {
 	font-weight:normal;
-	color : #4b7975;
+	color : var(--dark-teal);
 	text-decoration : none;
 	}
 
@@ -143,11 +143,11 @@ img#useplogo {
 }
 
 
-#headerlinks a:link, a:visited {
+#headerlinks a:link, #headerlinks a:visited {
 	color:#777;
 	}
 
-#headerlinks a:hover,a:active {
+#headerlinks a:hover, #headerlinks a:active {
 	color:#666;
 	}
 
@@ -174,7 +174,7 @@ img#useplogo {
 		}
 */
 
-#content a:hover, a:active {
+#content a:hover, #content a:active {
 		border-bottom:1px #549390 solid;
 		}
 
@@ -198,26 +198,27 @@ img#useplogo {
 }*/
 
 #listofstates {
-	background-color:#549390;
+	background-color:var(--teal);
 	min-height:1.2em;
 	width:100%;
 	font-family:georgia,palatino,serif;
 	letter-spacing:0.1em;
 	font-weight:normal;
 	font-size:1.2em;
-	color:#7badac;
+	color:#ffffff;
 	padding: 0.3em 0 0.3em 0;
 	text-align: center;
 	}
 
 	#listofstates a:link, #listofstates a:visited {
-	color:#f7f2e5;
+	color:#ffffff;
 	font-weight:normal;
+	text-decoration: underline;
 	}
 
 	#listofstates a:hover {
 		font-weight:normal;
-		color:#7badac;
+		color:#ffffff;
 	}
 
 	#listofstates li {
@@ -235,6 +236,7 @@ img#useplogo {
 .description {
 	padding-left: 20px;
 	font-weight: bold;
+	margin: 0 0 1rem 0;
 }
 	.description > a {
 		font-weight: inherit;
@@ -247,7 +249,7 @@ img#useplogo {
 
 a.js-link, .jslink { font-weight: normal; }
 .js-info {
-	border-left: 1px solid #7badac;
+	border-left: 1px solid #4b7975;
 	margin-left: 40px;
 	padding-left: 20px;
 }
@@ -368,6 +370,13 @@ footer {
 
 	margin: 1rem 0 0;
 	padding: 1rem 0;
+}
+
+footer a:link,
+footer a:visited,
+footer a:hover,
+footer a:active {
+	color: var(--cream-background);
 }
 
 footer #licenseinfo {
