@@ -5,5 +5,7 @@
 {% block page_title %}{{ page_data.title_content }}{% endblock page_title %}
 
 {% block content %}
-  {{ page_data.content|safe }}
+  <div class="static-content">
+    {{ page_data.content|safe }}
+  </div>
 {% endblock content %}

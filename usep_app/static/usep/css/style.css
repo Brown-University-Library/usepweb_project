@@ -130,11 +130,17 @@ img {
     font-family:georgia,palatino,serif;
     text-transform:uppercase;
     letter-spacing:0.15em;
-    color:#777;
+    color:#d6d1c3;
     }
 
-#headerlinks div:first-child {
+#header_image_links {
     margin-bottom: 5px;
+}
+
+#header_text_links {
+	background-color: #424242;
+	display: inline-block;
+	padding: 0.2rem 0.5rem;
 }
 
 img#useplogo {
@@ -144,11 +150,11 @@ img#useplogo {
 
 
 #headerlinks a:link, #headerlinks a:visited {
-	color:#777;
+	color:#d6d1c3;
 	}
 
 #headerlinks a:hover, #headerlinks a:active {
-	color:#666;
+	color:#f7f2e5;
 	}
 
 #content, body > h1 {
@@ -252,6 +258,22 @@ a.js-link, .jslink { font-weight: normal; }
 	border-left: 1px solid #4b7975;
 	margin-left: 40px;
 	padding-left: 20px;
+}
+
+.static-content,
+.static-content p,
+.static-content li,
+.static-content dd,
+.static-content dt {
+	color: var(--grey);
+}
+
+.static-content a:link,
+.static-content a:visited,
+.static-content a:hover,
+.static-content a:active {
+	color: var(--dark-teal);
+	text-decoration: underline;
 }
 
 /* for external xsl/xml-powered collections pages */
