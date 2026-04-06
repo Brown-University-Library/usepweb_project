@@ -16,6 +16,7 @@
     <div id="container">
       <p>( Total: {{ inscription_count }} ) Jump to: {% for k,v in display.items %}<a href="#{{ k }}">{{ v }}</a>{% if not forloop.last %} | {% endif %}{% endfor %}</p>
       {% for keylang,language_group in inscriptions.items %}
+      {% if language_group.docs %}
       <h2 id="{{ keylang }}">{{ language_group.display }}</h2>
       <ul class="collection">
         {% for result in language_group.docs %}
@@ -37,6 +38,7 @@
         </li>
         {% endfor %}
       </ul>
+      {% endif %}
       {% endfor %}
     </div>
   </div>
