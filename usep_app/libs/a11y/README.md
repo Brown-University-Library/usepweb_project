@@ -30,6 +30,12 @@ Install the local dependency group and a Playwright browser binary:
 
 ```bash
 uv sync --group local
-uv run --group local playwright install chromium
+uv run --group local playwright install webkit
 ```
 
+If you want Chromium instead, install it and pass `--browser chromium` explicitly:
+
+```bash
+uv run --group local playwright install chromium
+uv run --group local ./usep_app/libs/a11y/playwright_axe_audit.py --browser chromium http://127.0.0.1:8000/usep/
+```

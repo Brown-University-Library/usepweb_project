@@ -67,7 +67,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         '--browser',
         choices=['chromium', 'firefox', 'webkit'],
-        default='chromium',
+        default='webkit',
         help='Browser engine used for the audit.',
     )
     parser.add_argument(
@@ -168,6 +168,41 @@ def choose_browser_launcher(playwright_client, browser: str):
     return launcher
 
 
+def build_playwright_setup_message(browser: str) -> str:
+    """
+    Builds the setup guidance shown when Playwright cannot run the audit.
+
+    Called by: run_axe_audit()
+    """
+
+    guidance = (
+        'Run `uv sync --group local` and '
+        f'`uv run --group local playwright install {browser}` before using this tool.'
+    )
+    return guidance
+
+
+def build_browser_failure_message(browser: str, error: Exception) -> str:
+    """
+    Builds a more precise browser failure message from the Playwright exception.
+
+    Called by: run_axe_audit()
+    """
+
+    error_text = str(error).strip()
+    message = f'Accessibility audit failed while using `{browser}`. {error_text}'
+
+    if browser == 'chromium' and 'Received signal 11' in error_text:
+        message = (
+            'Accessibility audit failed because Playwright Chromium crashed during launch. '
+            'On this machine, try `uv run --group local playwright install webkit` and then rerun with '
+            '`--browser webkit`. '
+            f'Original Playwright error: {error_text}'
+        )
+
+    return message
+
+
 def build_axe_run_options(include_tags: list[str] | None) -> dict:
     """
     Builds axe run options from the provided include-tag filter.
@@ -205,12 +240,33 @@ def evaluate_axe(page, include_tags: list[str] | None, exclude_selectors: list[s
 
     context = build_axe_context(exclude_selectors)
     options = build_axe_run_options(include_tags)
-    result = page.evaluate(
-        """async ({ context, options }) => {
-            return await window.axe.run(context, options);
-        }""",
-        {'context': context, 'options': options},
-    )
+    if context and options:
+        result = page.evaluate(
+            """async ({ context, options }) => {
+                return await window.axe.run(context, options);
+            }""",
+            {'context': context, 'options': options},
+        )
+    elif context:
+        result = page.evaluate(
+            """async ({ context }) => {
+                return await window.axe.run(context);
+            }""",
+            {'context': context},
+        )
+    elif options:
+        result = page.evaluate(
+            """async ({ options }) => {
+                return await window.axe.run(document, options);
+            }""",
+            {'options': options},
+        )
+    else:
+        result = page.evaluate(
+            """async () => {
+                return await window.axe.run(document);
+            }"""
+        )
     return result
 
 
@@ -250,7 +306,7 @@ def normalize_violations(violations: list[dict]) -> list[dict]:
 
 def run_axe_audit(
     url: str,
-    browser: str = 'chromium',
+    browser: str = 'webkit',
     wait_until: str = 'networkidle',
     timeout_ms: int = 30000,
     include_tags: list[str] | None = None,
@@ -269,10 +325,7 @@ def run_axe_audit(
         from playwright.sync_api import Error as PlaywrightError
         from playwright.sync_api import sync_playwright
     except ModuleNotFoundError as exc:
-        raise A11yAuditError(
-            'Playwright is not installed. Run `uv sync --group local` and '
-            '`uv run --group local playwright install chromium` before using this tool.'
-        ) from exc
+        raise A11yAuditError(build_playwright_setup_message(browser)) from exc
 
     validate_url(url)
     resolved_axe_script_path = Path(axe_script_path) if axe_script_path else AXE_SCRIPT_PATH
@@ -295,10 +348,7 @@ def run_axe_audit(
                 page.close()
                 browser_instance.close()
     except PlaywrightError as exc:
-        raise A11yAuditError(
-            'Accessibility audit failed. Run `uv sync --group local` and '
-            '`uv run --group local playwright install chromium` before using this tool.'
-        ) from exc
+        raise A11yAuditError(build_browser_failure_message(browser, exc)) from exc
 
     violations = normalize_violations(raw_result.get('violations', []))
     result = A11yAuditResult(
