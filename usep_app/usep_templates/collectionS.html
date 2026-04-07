@@ -65,7 +65,13 @@
       {% for item in region_name.list %}
         <div class="description">
           <a href="../collections/{{ item.collection_code }}/">{{ item.collection_code }}</a>
-          <a class="js-link" href="#{{ item.collection_code|lower }}-details" aria-controls="{{ item.collection_code|lower }}-details">[More...]</a>
+          <a
+            class="js-link"
+            href="#{{ item.collection_code|lower }}-details"
+            aria-controls="{{ item.collection_code|lower }}-details"
+            aria-expanded="false"
+            style="font-weight: normal;"
+          >[More...]</a>
           <br/>
           <a target="_blank" href="{{ item.collection_url }}">{{ item.collection_name }}<br/>{{ item.collection_address }}</a>
           <div class="js-info" id="{{ item.collection_code|lower }}-details">
@@ -96,7 +102,13 @@
       {% for item in region_name.list %}
         <div class="description">
           <a href="../collections/{{ item.collection_code }}/">{{ item.collection_code }}</a>
-          <a class="js-link" href="#{{ item.collection_code|lower }}-details" aria-controls="{{ item.collection_code|lower }}-details">[More...]</a>
+          <a
+            class="js-link"
+            href="#{{ item.collection_code|lower }}-details"
+            aria-controls="{{ item.collection_code|lower }}-details"
+            aria-expanded="false"
+            style="font-weight: normal;"
+          >[More...]</a>
           <br/>
           <a target="_blank" href="{{ item.collection_url }}">{{ item.collection_name }}<br/>{{ item.collection_address }}</a>
           <div class="js-info" id="{{ item.collection_code|lower }}-details">
@@ -120,18 +132,24 @@
   <script type="text/javascript">
     function showInfo () {
       var el = $(this);
-      el.parent().next('.js-info').toggle('fast', 'swing');
+      var details = el.siblings('.js-info');
+      var willExpand = !details.is(':visible');
+
+      details.toggle('fast', 'swing');
+      el.attr('aria-expanded', willExpand ? 'true' : 'false');
       return false;
     }
 
     $(document).ready(function() {
       if (window.location.hash !== '#showall') {
         $('.js-info').hide();
+        $('.js-link').attr('aria-expanded', 'false');
       }
       $('.js-link').click(showInfo);
 
       $('#showall').click(function(event) {
         $('.js-info').show();
+        $('.js-link').attr('aria-expanded', 'true');
       });
     });
   </script>

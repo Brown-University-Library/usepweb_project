@@ -241,11 +241,11 @@ img#useplogo {
 
 .description {
 	padding-left: 20px;
-	font-weight: bold;
+	font-weight: normal;
 	margin: 0 0 1rem 0;
 }
-	.description > a {
-		font-weight: inherit;
+	.description > a:first-child {
+		font-weight: bold;
 	}
 	.description > a:last-child{
 		background:url(gfx/external-link-icon.png) center right no-repeat;
@@ -253,7 +253,11 @@ img#useplogo {
 	}
 
 
-a.js-link, .jslink { font-weight: normal; }
+a.js-link,
+.jslink,
+.description > a.js-link {
+	font-weight: normal;
+}
 .js-info {
 	border-left: 1px solid #4b7975;
 	margin-left: 40px;
