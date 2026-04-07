@@ -247,7 +247,7 @@ img#useplogo {
 	.description > a:first-child {
 		font-weight: bold;
 	}
-	.description > a:last-child{
+	.description > a[target="_blank"]{
 		background:url(gfx/external-link-icon.png) center right no-repeat;
 		padding: 0 13px 0 0;
 	}
