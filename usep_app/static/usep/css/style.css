@@ -219,7 +219,7 @@ img#useplogo {
 	#listofstates a:link, #listofstates a:visited {
 	color:#ffffff;
 	font-weight:normal;
-	text-decoration: underline;
+	text-decoration: none;
 	}
 
 	#listofstates a:hover {
