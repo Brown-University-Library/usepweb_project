@@ -32,3 +32,20 @@
   - When finished with a page, pause so I can review and commit changes.
 
   ---
+
+
+Agent notes:
+
+- Current pages addressed cleanly:
+
+  - collections list page
+  - collection detail page
+  - inscription page loading indicator
+  - search form
+  - search results
+  - about/contact header and static-content issues
+
+  I kept the fixes repo-local to templates and static assets, and stopped short of stylesheet-generated inscription HTML except where the loading UI was
+  clearly in repo-controlled Highslide assets.
+
+---
