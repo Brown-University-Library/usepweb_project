@@ -19,12 +19,20 @@
   }
   
   .bibID {
-    color: grey;
+    color: #444444 !important;
+    background-color: #f5f5f5 !important;
+    font-weight: 600;
+    padding: 0 0.15rem;
   }
  /* div#main ul li:after {
     content: ',';
   }
  */
+
+  #container .bibID {
+    color: #444444 !important;
+    background-color: #f5f5f5 !important;
+  }
 
   </style>
 {% endblock %}
@@ -34,7 +42,12 @@
 {% block page_title %}Publications{% endblock page_title %}
 
 {% block content %}
-  <div id="loading" style="background-image: url('{{ custom_static_url }}usep/loading.png');"></div>
+  <div
+    id="loading"
+    aria-label="Loading publications"
+    role="status"
+    style="background-image: url('{{ custom_static_url }}usep/loading.png');"
+  ></div>
   <div id="main" style="display:visible;">
 
    <!-- <div id="testing">
@@ -93,5 +106,4 @@
 </script>
 
 {% endblock page_js %}
-
 

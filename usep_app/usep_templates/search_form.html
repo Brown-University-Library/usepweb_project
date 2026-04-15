@@ -68,6 +68,18 @@
 		width: 1in;
 		margin: auto;
 	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
 </style>
 <script type="text/javascript">
 	function expand(event) {
@@ -108,21 +120,28 @@
 {% block content%}
 {% block form%}
 <form id="searchform" action="results" method="GET">
-	<label for="fulltext">Full Text Search: <input type="text" name="text"></input></label>
+	<label for="fulltext">Full Text Search:</label>
+	<input id="fulltext" type="text" name="text"></input>
 
 	<input type="submit" value="Search"></input>
 	<button id="adv_button" type="button" onclick="expand(event);">Advanced Search</button>
 	<br>
 	<fieldset id="advanced">
-	<table>
 	<button class="reset" type="button" onclick="reset()">Reset Search</button>
 	To search by publication, see <a href="{% url 'publications_url' %}">Publications</a>
+	<table>
  	<tr>
 		<th>Transcription Status</th>
 		<td>
-			<input type="radio" name="status" value="transcription" checked>Show only fully transcribed inscriptions</input><br/>
-			<input type="radio" name="status" value="metadata">Show all inscriptions that have metadata</input><br/>
-			<input type="radio" name="status" value="bib_only">Show all inscriptions, even ones with only bibliographic information.</input>
+			<fieldset>
+				<legend class="sr-only">Transcription Status</legend>
+				<input id="status_transcription" type="radio" name="status" value="transcription" checked></input>
+				<label for="status_transcription">Show only fully transcribed inscriptions</label><br/>
+				<input id="status_metadata" type="radio" name="status" value="metadata"></input>
+				<label for="status_metadata">Show all inscriptions that have metadata</label><br/>
+				<input id="status_bib_only" type="radio" name="status" value="bib_only"></input>
+				<label for="status_bib_only">Show all inscriptions, even ones with only bibliographic information.</label>
+			</fieldset>
 		</td>
 	</tr>
 	<tr>
@@ -133,17 +152,18 @@
 			<label for="notAfter">Not After:<input id="notAfter" type="num" max="1000" min="-1000" step="1" name="notAfter" onchange="dateChange(event);"></input></label>
 			<span id="error"></span>
 			<br/>
-			<label for="date_type"><select name="date_type" value="inclusive">
+			<label for="date_type">Date Range Match Type:</label>
+			<select id="date_type" name="date_type" value="inclusive">
 				<option value="inclusive" checked>Inclusive (inscriptions whose range matches any part)</option>
 				<option value="exclusive">Exclusive (inscriptions whose range is entirely contained)</option>
-			</select></label>
+			</select>
 		</td>
 	</tr>
  	{% for field_val in facets %}
  	<tr>
-	<th for="{{field_val.0}}">{{field_val.0|tax}}</th>
+	<th><label for="{{field_val.0}}">{{field_val.0|tax}}</label></th>
 	<td>
-	<select multiple name="{{field_val.0}}">
+	<select id="{{field_val.0}}" multiple name="{{field_val.0}}">
 		<!-- <option value="NONE">Select...</option> -->
 		{% for item in field_val.1 %}
 			<option value="{{item.0}}">
@@ -157,8 +177,13 @@
 	<tr>
 		<th>Fake</th>
 		<td>
-			<input type="radio" name="fake" value="include">Show inscriptions that are forgeries or counterfeit (falsi vel alieni)</input><br/>
-			<input type="radio" name="fake" value="hide" checked>Don't show forgeries</input>
+			<fieldset>
+				<legend class="sr-only">Fake</legend>
+				<input id="fake_include" type="radio" name="fake" value="include"></input>
+				<label for="fake_include">Show inscriptions that are forgeries or counterfeit (falsi vel alieni)</label><br/>
+				<input id="fake_hide" type="radio" name="fake" value="hide" checked></input>
+				<label for="fake_hide">Don't show forgeries</label>
+			</fieldset>
 		</td>
 	</tr>
 	</table>
@@ -172,4 +197,3 @@
 {{error}}
 
 {% endblock content %}
-
