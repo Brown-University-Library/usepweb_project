@@ -156,3 +156,40 @@ class CollectionViewSortTest( TestCase ):
         ]
 
         self.assertEqual(sorted_doc_list, correct_sorted_doc_list)        
+
+
+class CollectionsAccessibilityRegressionTest( TestCase ):
+    """ Checks malformed collection-region data does not render empty links or headings. """
+
+    def test_blank_region_metadata_does_not_render_empty_navigation_or_headings( self ):
+        """ Checks blank region values do not produce href="#" links or empty headings. """
+        models.FlatCollection.objects.bulk_create(
+            [
+                models.FlatCollection(
+                    collection_code='BROKEN.1',
+                    region_code='',
+                    region_name='',
+                    collection_name='Broken Collection',
+                    collection_address='Somewhere',
+                    collection_url='https://example.com/broken',
+                    collection_description='Broken description',
+                ),
+                models.FlatCollection(
+                    collection_code='RI.TEST.1',
+                    region_code='RI',
+                    region_name='Rhode Island',
+                    collection_name='Rhode Island Collection',
+                    collection_address='Providence, RI',
+                    collection_url='https://example.com/ri',
+                    collection_description='Normal description',
+                ),
+            ]
+        )
+
+        response = self.client.get( '/usep/collections/' )
+
+        self.assertEqual( 200, response.status_code )
+        self.assertNotContains( response, 'href="#"' )
+        self.assertNotContains( response, '<h3 id=""></h3>', html=True )
+        self.assertContains( response, 'href="#ri"' )
+        self.assertContains( response, '<h3 id="ri">Rhode Island</h3>', html=True )
