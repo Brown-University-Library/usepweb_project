@@ -11,7 +11,7 @@
     <div id="listrow1" style="text-align:left; padding-left:1em;">
       USA:
         {% for code in region_codes %}
-         {%if "ITA" not in code %}
+         {% if code and "ITA" not in code %}
       <span><a href="#{{ code|lower }}">{{ code }}</a></span>{% if not forloop.last %} | {% endif %}
       {% endif %}
 
@@ -20,7 +20,7 @@
   <div id="listrow2" style="text-align:left;padding-left:1em;">
     OTHER:
     {% for code in region_codes %}
-         {%if "ITA" in code %}
+         {% if code and "ITA" in code %}
       <span ><a href="#{{ code|lower }}">{{ code }}</a></span>{% if not forloop.last %} {% endif %}
       {% endif %}
 
@@ -56,7 +56,7 @@
       {%if "ITA" in region_name.list.0.region_code %}
 
       {% for item in region_name.list %}
-        {% if forloop.first %}
+        {% if forloop.first and item.region_code and region_name.grouper %}
           <h3 id="{{ item.region_code|lower }}">{{ region_name.grouper }}</h3>
         {% endif %}
       {% endfor %}
@@ -93,7 +93,7 @@
 
       {% comment %} ## Region-name with anchor ## {% endcomment %}
       {% for item in region_name.list %}
-        {% if forloop.first %}
+        {% if forloop.first and item.region_code and region_name.grouper %}
           <h3 id="{{ item.region_code|lower }}">{{ region_name.grouper }}</h3>
         {% endif %}
       {% endfor %}
