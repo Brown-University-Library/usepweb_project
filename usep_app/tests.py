@@ -3,6 +3,7 @@
 
 
 import collections, logging, pprint
+from pathlib import Path
 
 from django.test import TestCase
 from usep_app import models
@@ -193,3 +194,17 @@ class CollectionsAccessibilityRegressionTest( TestCase ):
         self.assertNotContains( response, '<h3 id=""></h3>', html=True )
         self.assertContains( response, 'href="#ri"' )
         self.assertContains( response, '<h3 id="ri">Rhode Island</h3>', html=True )
+
+
+class DisplayInscriptionContrastRegressionTest( TestCase ):
+    """ Checks inscription heading contrast styling stays above the failure threshold. """
+
+    def test_inscription_heading_color_is_darkened_for_contrast( self ):
+        """ Checks translation and commentary headings use the darker local CSS color. """
+        response = self.client.get( '/usep/inscription/CA.Berk.UC.HMA.L.8-2330/' )
+
+        self.assertEqual( 200, response.status_code )
+        self.assertContains( response, 'usep/css/inscription.css' )
+
+        css_text = Path( __file__ ).with_name( 'static' ).joinpath( 'usep/css/inscription.css' ).read_text( encoding='utf-8' )
+        self.assertIn( 'color:#3f6662;', css_text )
