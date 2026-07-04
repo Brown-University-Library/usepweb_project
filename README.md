@@ -5,6 +5,14 @@ This is the code that powers the Brown University [U.S. Epigraphy](http://librar
 For more information about that project, see that site's ['About' page](http://library.brown.edu/projects/usep/about/)
 
 
+## Contents
+
+- [Overview](#overview)
+- [Configuration](#configuration)
+- [Localbox installation for devs](#localbox-installation-for-devs)
+- [Usage](#usage)
+
+
 ## Overview
 
 - Framework: Django
@@ -34,30 +42,46 @@ The app requires a repository-adjacent `.env` file. `config/settings.py` loads i
 - a few maintenance URLs used by the app
 
 
-## Common Commands
+## Localbox installation for devs
 
-Install dependencies:
+- get the code
 
-```bash
-uv sync
-```
+    ```bash
+    mkdir ./usepweb_project_stuff
+    cd ./usepweb_project_stuff
+    git clone `git@github.com:Brown-University-Library/usepweb_project.git`
+    ```
 
-Run the Django development server:
+- set up the venv
 
-```bash
-uv run ./manage.py runserver 127.0.0.1:8000
-```
+    ```bash
+    cd ./usepweb_project
+    uv sync
+    ```
 
-Run database migrations:
+- set up the dotenv file
+Get a copy of the `.env` file from a developer and put it in the `./usepweb_project_stuff/` directory.
 
-```bash
-uv run ./manage.py migrate
-```
 
-Run tests:
+## Usage
 
-```bash
-uv run ./manage.py test
-```
+- Run the development server
+
+    ```bash
+    uv run ./manage.py runserver 
+    ```
+
+- Run database migrations (one-time; initial setup)
+
+    ```bash
+    uv run ./manage.py migrate
+    ```
+
+- Run tests
+
+    ```bash
+    uv run ./manage.py test
+    ```
+
 
 ---
