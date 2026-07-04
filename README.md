@@ -60,8 +60,20 @@ The app requires a repository-adjacent `.env` file. `config/settings.py` loads i
     ```
 
 - set up the dotenv file
-Get a copy of the `.env` file from a developer and put it in the `./usepweb_project_stuff/` directory.
 
+    Get a copy of the `.env` file from a developer and put it in the `./usepweb_project_stuff/` directory.
+
+- set up an ssh-tunnel to solr
+
+    (assumes solr is locked down to only allow access from a dev or prod server via iP)
+
+    ```bash
+    ssh -N -L 9999:solr-server.domain.edu:1234 username@dev-server.domain.edu
+    ```
+
+    This, then, allows you to make a `.env` setting like `USEPWEB__SOLR_URL_BASE="http://127.0.0.1:9999/solr-root/select/"`.
+
+    Running that `ssh` command won't show any output, but you can confirm the tunnel is working via trying `http://127.0.0.1:9999/solr/#/` in a browser.
 
 ## Usage
 
