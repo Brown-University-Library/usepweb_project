@@ -65,7 +65,9 @@ The app requires a repository-adjacent `.env` file. `config/settings.py` loads i
 
 - set up an SSH tunnel to Solr
 
-    (assumes Solr is locked down to only allow access from a dev or prod server via IP)
+    (Assumes Solr is locked down to only allow access from a dev or prod server via IP.)
+
+    In a separate terminal tab, run:
 
     ```bash
     ssh -N -L 9999:solr-server.domain.edu:1234 username@dev-server.domain.edu
@@ -77,6 +79,8 @@ The app requires a repository-adjacent `.env` file. `config/settings.py` loads i
     This, then, allows you to make a `.env` setting like `USEPWEB__SOLR_URL_BASE="http://127.0.0.1:9999/solr-root/select/"`.
 
     Running that `ssh` command won't show any output, but you can confirm the tunnel is working by opening `http://127.0.0.1:9999/solr/#/` in a browser.
+
+    That connection will stay open as long as the terminal tab is open.
 
 ## Usage
 
