@@ -60,6 +60,7 @@ WSGI_APPLICATION = 'config.passenger_wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = json.loads( os.environ['USEPWEB__DATABASES_JSON'] )
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 # Internationalization
@@ -164,4 +165,3 @@ LOGGING = {
         },
     }
 }
-
