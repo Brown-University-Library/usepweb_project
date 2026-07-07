@@ -1,4 +1,67 @@
 # -*- coding: utf-8 -*-
+"""
+Exports, imports, and validates database-transfer artifacts for this Django project.
+
+Purpose
+-------
+
+This command supports moving the USEP webapp database from an existing live database, currently expected to be MySQL in
+older environments, into a clean Django-managed database such as SQLite, for our dev-server and for local development.
+It is intentionally Django-aware: it uses Django settings, registered models, database introspection, serializers,
+migrations, and fixture loading instead of shelling out to database command-line tools.
+
+The command treats the live database as the schema source of truth for audit purposes. That matters because this legacy
+project has not always had complete migrations for every model change. During export, the command captures the live
+schema and compares it with the current registered Django models so an operator can see whether a standard fixture-based
+transfer is likely to be complete.
+
+Transfer model
+--------------
+
+The normal transfer path is fixture-centered:
+
+1. `export` writes Django model data to `fixture.django.json`.
+2. `import` creates the target SQLite schema through Django's migration/syncdb path.
+3. `import` loads `fixture.django.json` through Django's fixture loader.
+4. `validate` compares expected model-backed table counts and admin/superuser state.
+
+Raw schema and row artifacts are audit/fallback artifacts, not the standard importer input. `schema.json` and
+`schema-source.sql` preserve what the source database looked like. If schema/model drift is detected, raw JSONL files are
+also written under `data/` so rows from drifted or unexpected tables/columns can be inspected manually.
+
+Default artifacts
+-----------------
+
+Exports are written to timestamped directories under `../db_exports` from the project root unless `--output-dir` is
+provided. The command refuses to write export artifacts inside the Git project directory unless
+`--force-in-repo-output` is passed.
+
+Typical export files:
+
+- `manifest.json`: export metadata, row counts, redacted database settings, and drift summary
+- `fixture.django.json`: portable Django fixture for model-backed data
+- `schema.json`: structured live-schema introspection and model/schema comparison
+- `schema-source.sql`: source-backend Data Definition Language for reference
+- `checksums.json`: SHA-256 checksums for exported artifacts
+- `import-report.json`: validation report written after import
+- `data/*.jsonl`: raw table rows, only generated when drift is detected
+
+Usage
+-----
+
+Run through Django's management command interface:
+
+```bash
+uv run ./manage.py db_transfer_validation --help
+uv run ./manage.py db_transfer_validation inspect-drift --database default
+uv run ./manage.py db_transfer_validation export --database default --output-dir ../db_exports
+uv run ./manage.py db_transfer_validation import --input-dir ../db_exports/EXPORT_DIR --sqlite-path /path/to/new.sqlite3
+uv run ./manage.py db_transfer_validation validate --input-dir ../db_exports/EXPORT_DIR --sqlite-path /path/to/new.sqlite3
+```
+
+`import` will not overwrite an existing SQLite target unless `--drop-existing-sqlite` is provided. The import path uses
+Django's SQLite backend and does not require the external `sqlite3` command-line tool.
+"""
 
 import base64
 import datetime
@@ -17,7 +80,6 @@ from django.apps import apps
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError, call_command
 from django.db import DEFAULT_DB_ALIAS, connections
-
 
 COMMAND_NAME = 'db_transfer_validation'
 EXPORT_FORMAT_VERSION = 1
@@ -134,7 +196,9 @@ def run_export(
     raw_data_tables = []
     if drift_report['has_drift']:
         raw_data_tables = [table for table in table_names if table not in DEFAULT_EXCLUDED_TABLES]
-        raw_data_checksums = export_raw_table_rows(connection, export_dir / 'data', raw_data_tables, schema_report, batch_size)
+        raw_data_checksums = export_raw_table_rows(
+            connection, export_dir / 'data', raw_data_tables, schema_report, batch_size
+        )
 
     checksums = build_checksums(export_dir, raw_data_checksums)
     write_json(export_dir / 'checksums.json', checksums)
@@ -733,8 +797,7 @@ def remove_database_alias(database_alias: str) -> None:
     """
     if database_alias in connections:
         connections[database_alias].close()
-    if hasattr(connections._connections, database_alias):
-        delattr(connections._connections, database_alias)
+        del connections[database_alias]
     settings.DATABASES.pop(database_alias, None)
     connections.databases.pop(database_alias, None)
 

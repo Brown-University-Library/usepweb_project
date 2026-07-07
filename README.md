@@ -102,5 +102,8 @@ The app requires a repository-adjacent `.env` file. `config/settings.py` loads i
     uv run ./manage.py test
     ```
 
+- Database transfer/export/import support is available via `uv run ./manage.py db_transfer_validation --help`.
+  See the docstring in `usep_app/management/commands/db_transfer_validation.py` for purpose and usage notes.
+
 
 ---
