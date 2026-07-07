@@ -42,6 +42,15 @@ class DbTransferValidationHelperTest(TestCase):
         with self.assertRaises(CommandError):
             db_transfer_validation.resolve_output_parent(str(project_root / 'tmp-export'), False)
 
+    def test_expected_index_signatures_include_unique_model_fields(self):
+        """ Checks expected index signatures use columns and uniqueness rather than generated names. """
+        expected_signatures = db_transfer_validation.build_expected_index_signature_map()
+        username_signature = (('username',), True)
+
+        self.assertIn('auth_user', expected_signatures)
+        self.assertIn(username_signature, expected_signatures['auth_user'])
+        self.assertIn('auth.User.username unique field', expected_signatures['auth_user'][username_signature]['sources'])
+
 
 class DbTransferValidationCommandTest(TestCase):
     """ Checks db_transfer_validation management-command workflows. """

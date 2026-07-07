@@ -13,7 +13,8 @@ migrations, and fixture loading instead of shelling out to database command-line
 The command treats the live database as the schema source of truth for audit purposes. That matters because this legacy
 project has not always had complete migrations for every model change. During export, the command captures the live
 schema and compares it with the current registered Django models so an operator can see whether a standard fixture-based
-transfer is likely to be complete.
+transfer is likely to be complete. The drift report includes tables, columns, and a best-effort index comparison based
+on normalized column/uniqueness signatures rather than backend-generated index names.
 
 Transfer model
 --------------
@@ -73,7 +74,7 @@ import platform
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import django
 from django.apps import apps
@@ -461,6 +462,8 @@ def compare_model_schema(tables: Dict[str, Any]) -> Dict[str, Any]:
     model_tables_missing_from_live = sorted(model_table_names - live_table_names)
     live_columns_not_in_models = {}
     model_fields_missing_from_live = {}
+    index_comparison = compare_model_indexes(tables)
+    model_indexes_missing_from_live = {}
 
     for table_name in sorted(live_table_names & model_table_names):
         live_columns = set(column['name'] for column in tables[table_name]['columns'])
@@ -472,11 +475,17 @@ def compare_model_schema(tables: Dict[str, Any]) -> Dict[str, Any]:
         if missing_columns:
             model_fields_missing_from_live[table_name] = missing_columns
 
+    for table_name, table_index_comparison in index_comparison['tables'].items():
+        missing_indexes = table_index_comparison['model_indexes_missing_from_live']
+        if missing_indexes:
+            model_indexes_missing_from_live[table_name] = missing_indexes
+
     has_drift = bool(
         live_tables_without_models
         or model_tables_missing_from_live
         or live_columns_not_in_models
         or model_fields_missing_from_live
+        or model_indexes_missing_from_live
     )
     comparison = {
         'has_drift': has_drift,
@@ -487,8 +496,185 @@ def compare_model_schema(tables: Dict[str, Any]) -> Dict[str, Any]:
         'model_tables_missing_from_live': model_tables_missing_from_live,
         'live_columns_not_in_models': live_columns_not_in_models,
         'model_fields_missing_from_live': model_fields_missing_from_live,
+        'index_comparison': index_comparison,
     }
     return comparison
+
+
+def compare_model_indexes(tables: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Compares live and model-expected indexes by normalized column/uniqueness signatures.
+
+    Called by: compare_model_schema()
+    """
+    expected_signatures = build_expected_index_signature_map()
+    live_signatures = build_live_index_signature_map(tables)
+    compared_tables = sorted(set(expected_signatures.keys()) | set(live_signatures.keys()))
+    comparison_tables = {}
+
+    for table_name in compared_tables:
+        expected_table_signatures = expected_signatures.get(table_name, {})
+        live_table_signatures = live_signatures.get(table_name, {})
+        missing_keys = sorted(set(expected_table_signatures.keys()) - set(live_table_signatures.keys()))
+        extra_keys = sorted(set(live_table_signatures.keys()) - set(expected_table_signatures.keys()))
+
+        if missing_keys or extra_keys:
+            comparison_tables[table_name] = {
+                'model_indexes_missing_from_live': [
+                    format_index_signature(key, expected_table_signatures[key]) for key in missing_keys
+                ],
+                'live_indexes_without_model_match': [
+                    format_index_signature(key, live_table_signatures[key]) for key in extra_keys
+                ],
+            }
+
+    comparison = {
+        'has_index_drift': any(
+            table_comparison['model_indexes_missing_from_live'] for table_comparison in comparison_tables.values()
+        ),
+        'tables': comparison_tables,
+        'notes': [
+            'Index comparison is normalized by columns and uniqueness, not by backend-generated index names.',
+            'Live indexes without model matches are reported for inspection but may be harmless backend-created indexes.',
+        ],
+    }
+    return comparison
+
+
+def build_expected_index_signature_map() -> Dict[str, Dict[Tuple[Tuple[str, ...], bool], Dict[str, Any]]]:
+    """
+    Builds expected index signatures from registered Django model metadata.
+
+    Called by: compare_model_indexes()
+    """
+    signature_map = {}
+    for model in apps.get_models(include_auto_created=True):
+        table_name = model._meta.db_table
+        table_signatures = signature_map.setdefault(table_name, {})
+
+        for field in model._meta.concrete_fields:
+            if field.primary_key:
+                continue
+            if field.unique:
+                add_expected_index_signature(table_signatures, [field.column], True, '%s.%s unique field' % (model._meta.label, field.name))
+            elif field.db_index:
+                add_expected_index_signature(table_signatures, [field.column], False, '%s.%s db_index field' % (model._meta.label, field.name))
+
+        for unique_together in model._meta.unique_together:
+            column_names = get_model_field_columns(model, unique_together)
+            add_expected_index_signature(
+                table_signatures,
+                column_names,
+                True,
+                '%s unique_together %s' % (model._meta.label, ','.join(unique_together)),
+            )
+
+        for index in model._meta.indexes:
+            field_names = [field_name.lstrip('-') for field_name in index.fields]
+            column_names = get_model_field_columns(model, field_names)
+            add_expected_index_signature(table_signatures, column_names, False, '%s Meta.indexes %s' % (model._meta.label, index.name))
+
+        for constraint in model._meta.constraints:
+            constraint_fields = getattr(constraint, 'fields', None)
+            if constraint.__class__.__name__ == 'UniqueConstraint' and constraint_fields:
+                column_names = get_model_field_columns(model, constraint_fields)
+                add_expected_index_signature(
+                    table_signatures,
+                    column_names,
+                    True,
+                    '%s UniqueConstraint %s' % (model._meta.label, constraint.name),
+                )
+    return signature_map
+
+
+def build_live_index_signature_map(tables: Dict[str, Any]) -> Dict[str, Dict[Tuple[Tuple[str, ...], bool], Dict[str, Any]]]:
+    """
+    Builds live index signatures from database constraint introspection.
+
+    Called by: compare_model_indexes()
+    """
+    signature_map = {}
+    for table_name, table_schema in tables.items():
+        table_signatures = signature_map.setdefault(table_name, {})
+        for constraint_name, constraint in table_schema.get('constraints', {}).items():
+            columns = constraint.get('columns') or []
+            is_index_like = constraint.get('index') or constraint.get('unique')
+            if constraint.get('primary_key') or not columns or not is_index_like:
+                continue
+            signature_key = make_index_signature_key(columns, bool(constraint.get('unique')))
+            signature_info = table_signatures.setdefault(
+                signature_key,
+                {
+                    'columns': list(signature_key[0]),
+                    'unique': signature_key[1],
+                    'names': [],
+                },
+            )
+            signature_info['names'].append(constraint_name)
+    return signature_map
+
+
+def add_expected_index_signature(
+    table_signatures: Dict[Tuple[Tuple[str, ...], bool], Dict[str, Any]],
+    column_names: Sequence[str],
+    unique: bool,
+    source: str,
+) -> None:
+    """
+    Adds one expected index signature to a table signature map.
+
+    Called by: build_expected_index_signature_map()
+    """
+    if column_names:
+        signature_key = make_index_signature_key(column_names, unique)
+        signature_info = table_signatures.setdefault(
+            signature_key,
+            {
+                'columns': list(signature_key[0]),
+                'unique': signature_key[1],
+                'sources': [],
+            },
+        )
+        signature_info['sources'].append(source)
+
+
+def get_model_field_columns(model: Any, field_names: Sequence[str]) -> List[str]:
+    """
+    Converts model field names to database column names.
+
+    Called by: build_expected_index_signature_map()
+    """
+    column_names = []
+    for field_name in field_names:
+        field = model._meta.get_field(field_name)
+        column_names.append(field.column)
+    return column_names
+
+
+def make_index_signature_key(column_names: Sequence[str], unique: bool) -> Tuple[Tuple[str, ...], bool]:
+    """
+    Builds a normalized index signature key.
+
+    Called by: add_expected_index_signature()
+    """
+    return (tuple(column_names), unique)
+
+
+def format_index_signature(signature_key: Tuple[Tuple[str, ...], bool], signature_info: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Formats an index signature for JSON output.
+
+    Called by: compare_model_indexes()
+    """
+    formatted_signature = {
+        'columns': list(signature_key[0]),
+        'unique': signature_key[1],
+    }
+    if 'sources' in signature_info:
+        formatted_signature['sources'] = sorted(signature_info['sources'])
+    if 'names' in signature_info:
+        formatted_signature['names'] = sorted(signature_info['names'])
+    return formatted_signature
 
 
 def build_model_table_map() -> Dict[str, Dict[str, Any]]:
