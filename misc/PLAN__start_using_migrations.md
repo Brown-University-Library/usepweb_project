@@ -53,9 +53,28 @@ Do not run a plain `migrate` against production first. For a legacy database wit
 
    For MySQL:
 
+   original recommendation...
+
    ```bash
    mysqldump --single-transaction --routines --triggers DB_NAME > before_migrations.sql
    ```
+
+   updated recommendation after i showed codex our sysadmin recommendation:
+
+    ```bash
+    /standard/odd/path/to/mysqldump \
+        --user=THE_USER \
+        --host=THE_HOST \
+        --enable-cleartext-plugin \
+        -p \
+        --single-transaction \
+        --skip-lock-tables \
+        --routines \
+        --triggers \
+        --events \
+        --no-tablespaces \
+        DB_NAME > /path/to/before_migrations.sql
+    ```
 
    For SQLite: copy the database file while the app is stopped.
 
