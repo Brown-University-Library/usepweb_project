@@ -4,6 +4,7 @@
 
 import collections, logging, pprint
 from pathlib import Path
+from unittest import mock
 
 from django.test import TestCase
 from usep_app import models
@@ -157,6 +158,17 @@ class CollectionViewSortTest( TestCase ):
         ]
 
         self.assertEqual(sorted_doc_list, correct_sorted_doc_list)        
+
+
+class CollectionViewMalformedSlugTest( TestCase ):
+    """ Checks malformed collection slugs 404 before querying Solr. """
+
+    def test_malformed_collection_slug_does_not_query_solr( self ):
+        with mock.patch( 'usep_app.models.Collection.get_solr_data' ) as mock_get_solr_data:
+            response = self.client.get( '/usep/collections/)/' )
+
+        self.assertEqual( 404, response.status_code )
+        mock_get_solr_data.assert_not_called()
 
 
 class CollectionsAccessibilityRegressionTest( TestCase ):
