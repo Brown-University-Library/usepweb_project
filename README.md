@@ -11,6 +11,7 @@ For more information about that project, see that site's ['About' page](http://l
 - [Configuration](#configuration)
 - [Localbox installation for devs](#localbox-installation-for-devs)
 - [Usage](#usage)
+- [Misc](#misc)
 
 
 ## Overview
@@ -63,6 +64,10 @@ The app requires a repository-adjacent `.env` file. `config/settings.py` loads i
 
     Get a copy of the `.env` file from a developer and put it in the `./usepweb_project_stuff/` directory.
 
+## Usage
+
+### Initial
+
 - set up an SSH tunnel to Solr
 
     (Assumes Solr is locked down to only allow access from a dev or prod server via IP.)
@@ -82,8 +87,6 @@ The app requires a repository-adjacent `.env` file. `config/settings.py` loads i
 
     That connection will stay open as long as the terminal tab is open.
 
-## Usage
-
 - Run the development server
 
     ```bash
@@ -101,6 +104,15 @@ The app requires a repository-adjacent `.env` file. `config/settings.py` loads i
     ```bash
     uv run ./manage.py test
     ```
+
+### General work
+
+- start the ssh-tunnel
+- start the server via runserver
+- test as needed
+
+
+## Misc
 
 - Database transfer/export/import support is available via `uv run ./manage.py db_transfer_validation --help`.
   See the docstring in `usep_app/management/commands/db_transfer_validation.py` for purpose and usage notes.
