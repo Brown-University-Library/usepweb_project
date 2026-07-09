@@ -127,18 +127,17 @@ def collection( request, collection ):
     def prepare_data():
         log.debug( 'starting collection->prepare_data()' )
         c = models.Collection()
+        try:
+            flat_collection = FlatCollection.objects.get( collection_code=collection )
+        except FlatCollection.DoesNotExist:
+            log.warning( 'no collection found for collection code, ``%s``; returning 404' % collection )
+            return {}
         solr_data = c.get_solr_data( collection )  ## list
         log.debug( 'type(solr_data), ``%s``' % type(solr_data) )
         data_dict = 'init'
         if solr_data == []:
             log.debug( 'solr_data empty; setting data_dict to {}' )
             data_dict = {}
-        if data_dict == 'init':
-            try:
-                flat_collection = FlatCollection.objects.get( collection_code=collection )
-            except:
-                log.exception( 'no collection found; traceback follows; processing will continue; setting data_dict to {}' )
-                data_dict = {}
         if data_dict == 'init':
             log.debug( 'data_dict looks good' )
             inscription_dict, num, display_dict = c.enhance_solr_data( solr_data, request.META['wsgi.url_scheme'], request.get_host() )
@@ -151,7 +150,7 @@ def collection( request, collection ):
                 'inscriptions': inscription_dict,
                 'inscription_count': num,
                 'display': display_dict,
-                'flat_collection': FlatCollection.objects.get(collection_code=collection),
+                'flat_collection': flat_collection,
                 'show_dates':False,
                 }
         return data_dict
