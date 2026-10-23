@@ -11,10 +11,8 @@ Below is a description of the flow of USEP work -- and an overview of the curren
 - [The main parts of the architecture](#the-main-parts-of-the-architecture)
 - [How the website builds a page](#how-the-website-builds-a-page)
 - [What the indexer prepares](#what-the-indexer-prepares)
-- [What became simpler](#what-became-simpler)
 - [Where maintainers can start](#where-maintainers-can-start)
 - [Update timing and failures](#update-timing-and-failures)
-- [Diagram files](#diagram-files)
 
 
 ## Data-flow overview
