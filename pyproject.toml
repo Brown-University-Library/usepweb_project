@@ -2,7 +2,7 @@
 name = "usep-web-project"
 version = "0.0.0"
 description = "Code for USEP webapp."
-readme = ""
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "Django~=4.2.0",
