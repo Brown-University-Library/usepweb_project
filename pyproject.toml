@@ -3,10 +3,10 @@ name = "usep-web-project"
 version = "0.0.0"
 description = "Code for USEP webapp."
 readme = ""
-requires-python = ">=3.8,<3.9"
+requires-python = ">=3.10"
 dependencies = [
     "Django~=4.2.0",
-    "lxml==4.4.1",
+    "lxml~=6.1.3",
     "requests==2.25.1",
     "python-dotenv~=1.0.0",
 ]
