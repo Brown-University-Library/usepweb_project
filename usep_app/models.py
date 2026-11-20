@@ -13,7 +13,7 @@ from usep_app import settings_app
 
 from  urllib.parse import urlencode
 
-from lxml import etree
+from lxml.etree import XPath, fromstring
 
 import string
 
@@ -38,7 +38,7 @@ class FlatCollection( models.Model ):
     collection_description = models.TextField( blank=True )
 
     def __unicode__(self):
-        return smart_str( self.collection_code, 'utf-8', 'replace' )
+        return smart_str(self.collection_code, strings_only=True)
 
     def save(self):
         """ Auto-builds collection_code from component parts if they exist. """
@@ -71,7 +71,7 @@ class FlatCollection( models.Model ):
     def make_region_codes_list(self):
         """ Returns unique sorted list of region codes. """
         from usep_app.models import FlatCollection
-        q = FlatCollection.objects.values('region_code').distinct()  # type: <class 'django.db.models.query.ValuesQuerySet'>; eg: [{'region_code': u'CA'}, {'region_code': u'MA'}]
+        q = FlatCollection.objects.values('region_code').distinct()
         region_codes = []
         for entry in q:
             list_entry = list(entry.values())
@@ -89,7 +89,7 @@ class AboutPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_str( self.title_page, 'utf-8', 'replace' )
+        return smart_str(self.title_page, strings_only=True)
     class Meta:
         verbose_name_plural = 'About page fields'
 
@@ -99,7 +99,7 @@ class TextsPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_str( self.title_page, 'utf-8', 'replace' )
+        return smart_str(self.title_page, strings_only=True)
     class Meta:
         verbose_name_plural = 'Texts page fields'
 
@@ -109,7 +109,7 @@ class LinksPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_str( self.title_page, 'utf-8', 'replace' )
+        return smart_str(self.title_page, strings_only=True)
     class Meta:
         verbose_name_plural = 'Links page fields'
 
@@ -119,7 +119,7 @@ class ContactsPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_str( self.title_page, 'utf-8', 'replace' )
+        return smart_str(self.title_page, strings_only=True)
     class Meta:
         verbose_name_plural = 'Contacts page fields'
 
@@ -129,7 +129,7 @@ class PublicationsPage(models.Model):
     title_content = models.CharField( blank=True, max_length=100 )
     content = models.TextField( blank=True, help_text='HTML allowed.' )
     def __unicode__(self):
-        return smart_str( self.title_page, 'utf-8', 'replace' )
+        return smart_str(self.title_page, strings_only=True)
     class Meta:
         verbose_name_plural = 'Publication page fields'
 
@@ -480,6 +480,8 @@ class Publications(object):
 
     def buildPubLists(self):
         """Builds list of publications grouped by type."""
+        if self.pubs_entries is None:
+            raise TypeError('Fetch publication data before building publication lists.')
         log.debug( 'len( self.pubs_entries ): %s' % len( self.pubs_entries ) )
         corpora_dict = {}; journal_dict = {}; monograph_dict = {}  # temp holders
 
@@ -814,8 +816,8 @@ class Vocab(object):
     def __init__(self):
         try:
             r = requests.get(self.tax_url)
-            self.xml = etree.fromstring(r.content)
-            self.control_vals = etree.XPath("//t:category/@xml:id", namespaces={"t":"http://www.tei-c.org/ns/1.0"})(self.xml)
+            self.xml = fromstring(r.content)
+            self.control_vals = XPath("//t:category/@xml:id", namespaces={"t":"http://www.tei-c.org/ns/1.0"})(self.xml)
         except Exception as e:
             logging.error(e)
             self.control_vals = []
@@ -824,7 +826,7 @@ class Vocab(object):
         self.map = dict()
 
         for val in self.control_vals:
-            display = etree.XPath("//t:category[@xml:id='{0}']/t:catDesc".format(val), namespaces={"t":"http://www.tei-c.org/ns/1.0"})(self.xml)
+            display = XPath("//t:category[@xml:id='{0}']/t:catDesc".format(val), namespaces={"t":"http://www.tei-c.org/ns/1.0"})(self.xml)
             if display:
                 self.map[val] = display[0].text
 
