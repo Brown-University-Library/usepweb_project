@@ -48,7 +48,10 @@
 {% block content%}
 
 
-{{error}}
+{% if invalid_search %}
+<p>We couldn’t read this search. Please check your search terms and filters.</p>
+<a href="{% url 'search_url' %}">Back to search</a>
+{% else %}
 
 {% block results%}
 
@@ -131,6 +134,6 @@ No Results. <a href="../">Search again...</a>
 </div>
 
 {% endblock facets%}
-
+{% endif %}
 
 {% endblock content %}

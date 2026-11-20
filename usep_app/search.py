@@ -4,14 +4,14 @@
 
 
 
-import datetime, json, logging, pprint
-import requests
-from django.conf import settings as settings_project
-from django.urls import reverse
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect
+import datetime
+import logging
+
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page
-from usep_app import settings_app, models
+from requests.exceptions import HTTPError
+
+from usep_app import models
 
 
 log = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ def search_form(request):
     return render(request, 'usep_templates/search_form.html', {"facets":f})
 
 
-def results(request):
+def results(request: HttpRequest) -> HttpResponse:
     log.debug( 'search.results() starting' )
     start_time = datetime.datetime.now()
 
@@ -44,15 +44,17 @@ def results(request):
 
     sh = models.SolrHelper()
 
-    results, facets, querystring = sh.query(q, {"rows": 4000})
+    try:
+        results, facets, querystring = sh.query(q, {'rows': 4000})
+    except HTTPError as exc:
+        if exc.response is None or exc.response.status_code != 400:
+            raise
+        return render(request, 'usep_templates/results.html', {'invalid_search': True}, status=400)
 
     show_dates = "notAfter" in querystring
 
     data_dict = {"q":q, "title":"Search", "facets":facets, "url":request.get_full_path(), "querystring":querystring, "show_dates":show_dates}
-    if 'error' in results:
-        data_dict['error'] = results['error']
-    else:
-        data_dict['results'] = sh.enhance_solr_data(results, request.META['wsgi.url_scheme'], request.get_host())
+    data_dict['results'] = sh.enhance_solr_data(results, request.META['wsgi.url_scheme'], request.get_host())
 
     elapsed_time = str( datetime.datetime.now() - start_time )
     log.debug( 'elapsed time, ```%s```' % elapsed_time )
