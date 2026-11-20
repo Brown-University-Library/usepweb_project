@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import annotations
+
 import collections, json, logging, os, pprint
 from operator import itemgetter
 import re  # for a comparator sort
@@ -602,7 +604,7 @@ class SolrHelper(object):
     def __init__(self):
         self.vocab = Vocab()
 
-    def makeSolrQuery(self, q_obj):
+    def makeSolrQuery(self, q_obj: dict[str, list[str]] | dict[str, str]) -> str:
         fields = []
         if "notBefore" not in q_obj or "notAfter" not in q_obj:
             # if we have an incomplete date, just skip it
@@ -649,11 +651,14 @@ class SolrHelper(object):
                         fields += ["(fake:*)"]
                     continue
 
-                if q_obj[f][0] == 'none_value':
+                facet_value = next((value for value in q_obj[f] if value.strip()), None)
+                if facet_value is None:
+                    continue
+                if facet_value == 'none_value':
                     fields += ["NOT ({0}:*)".format(f[6:])]
                     continue
 
-                fields += ["({0}:{1})".format(f[6:], q_obj[f][0])]
+                fields.append(f'({f[6:]}:{facet_value})')
                 continue
 
             if f == "fake":
@@ -691,9 +696,11 @@ class SolrHelper(object):
 
         return result_list
 
-    def query(self, q_obj, params={}, search_form=False):
+    def query(
+        self, q_obj: dict[str, list[str]] | dict[str, str], params: dict | None = None, search_form: bool = False
+    ) -> tuple[list, dict, str]:
         q = self.makeSolrQuery(q_obj)
-        params = dict(list(params.items()) + list(self.default_params.items()))
+        params = {**(params or {}), **self.default_params}
         params['facet.mincount'] = "1"
         params['facet.field'] = self.default_facets
         params['facet.query'] = ["NOT {0}:*".format(f) for f in self.null_fields]
@@ -701,10 +708,9 @@ class SolrHelper(object):
         log.debug( 'solr_url, `{}`'.format(self.solr_url) )
         r = requests.get(self.solr_url, params=params)
         log.debug( 'r.url, `{}`'.format(r.url) )
+        r.raise_for_status()
         resp = r.json()
         log.debug( 'resp, ```{}```'.format(pprint.pformat(resp)) )
-        # if "error" in resp:
-        #     return resp, None, None
         return self.add_collection(resp['response']['docs']), self.facetDisplay(resp['facet_counts'], search_form), q
 
     def facetDisplay(self, facets, form=False):
