@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import collections, json, logging, os, pprint
+from functools import cached_property
 from operator import itemgetter
 import re  # for a comparator sort
 
@@ -12,6 +13,7 @@ from django.urls import reverse
 from django.db import models
 from django.utils.encoding import smart_str
 from usep_app import settings_app
+from usep_app.libs.search_query import FACET_FIELDS, NULL_FIELDS, build_search_query
 
 from  urllib.parse import urlencode
 
@@ -596,93 +598,18 @@ class SolrHelper(object):
         'wt': 'json' }
     solr_url = settings_app.SOLR_URL_BASE
 
-    default_facets = ["condition", "language", "material",
-        "object_type", "text_genre", "writing", "status", "char", "name", "fake"]
+    default_facets = FACET_FIELDS
+    null_fields = NULL_FIELDS
 
-    null_fields = ["condition", "material","writing","char","name","fake"]
+    @cached_property
+    def vocab(self) -> Vocab:
+        """
+        Loads the vocabulary when the search form needs to sort labels.
+        Called by: SolrHelper.facetDisplay().
+        """
+        return Vocab()
 
-    def __init__(self):
-        self.vocab = Vocab()
-
-    def makeSolrQuery(self, q_obj: dict[str, list[str]] | dict[str, str]) -> str:
-        fields = []
-        if "notBefore" not in q_obj or "notAfter" not in q_obj:
-            # if we have an incomplete date, just skip it
-            if "date_type" in q_obj:
-                del q_obj["date_type"]
-            if "notBefore" in q_obj:
-                del q_obj["notBefore"]
-
-            if "notAfter" in q_obj:
-                del q_obj["notAfter"]
-
-        elif len(q_obj["notBefore"][0]) == 0 or len(q_obj["notBefore"][0]) == 0:
-            if "date_type" in q_obj:
-                del q_obj["date_type"]
-            if "notBefore" in q_obj:
-                del q_obj["notBefore"]
-            if "notAfter" in q_obj:
-                del q_obj["notAfter"]
-
-        else:
-            dtype = q_obj["date_type"][0]
-            nb = int(q_obj["notBefore"][0])
-            na = int(q_obj["notAfter"][0])
-            del q_obj["date_type"]
-            del q_obj["notBefore"]
-            del q_obj["notAfter"]
-            qstring = ""
-            if dtype == "inclusive":
-                qstring = "(notBefore:[{0} TO {1}] OR notAfter:[{0} TO {1}] OR (notBefore:[* TO {0}] AND notAfter[{1} TO *]) OR (notBefore:[{0} TO *] AND notAfter[* TO {1}]))"
-            else:
-                qstring = "(notBefore:[{0} TO *] AND notAfter[* TO {1}])"
-
-
-            fields += [qstring.format(nb, na)]
-
-
-        for f in q_obj:
-            if f.startswith("facet_"):
-
-                if f == "facet_fake":
-                    if q_obj[f][0] == 'not_fake':
-                        fields += ["NOT (fake:*)"]
-                    else:
-                        fields += ["(fake:*)"]
-                    continue
-
-                facet_value = next((value for value in q_obj[f] if value.strip()), None)
-                if facet_value is None:
-                    continue
-                if facet_value == 'none_value':
-                    fields += ["NOT ({0}:*)".format(f[6:])]
-                    continue
-
-                fields.append(f'({f[6:]}:{facet_value})')
-                continue
-
-            if f == "fake":
-                if q_obj[f][0] == 'hide':
-                    fields = fields + ["NOT (fake:*)"]
-                continue
-
-            if f == "status":
-                if q_obj[f][0] == "transcription":
-                    fields = fields + ["(status:transcription)"]
-                elif q_obj[f][0] == "metadata":
-                    fields = fields + ["(status:transcription OR status:metadata)"]
-                else:
-                     fields = fields + ["(status:*)"]
-                continue
-
-            values = []
-            for v in q_obj[f]:
-                if v:
-                    values = values + ["{0}:{1}".format(f,v)]
-
-            if values: fields = fields + ["("+(" OR ".join(values))+")"]
-
-        return " AND ".join(fields)
+    makeSolrQuery = staticmethod(build_search_query)
 
     def add_collection(self, result_list):
         for doc in result_list:
@@ -697,9 +624,9 @@ class SolrHelper(object):
         return result_list
 
     def query(
-        self, q_obj: dict[str, list[str]] | dict[str, str], params: dict | None = None, search_form: bool = False
+        self, q_obj: dict[str, list[str]], params: dict | None = None, search_form: bool = False
     ) -> tuple[list, dict, str]:
-        q = self.makeSolrQuery(q_obj)
+        q = '*:*' if search_form else self.makeSolrQuery(q_obj)
         params = {**(params or {}), **self.default_params}
         params['facet.mincount'] = "1"
         params['facet.field'] = self.default_facets

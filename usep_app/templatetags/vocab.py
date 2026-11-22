@@ -1,20 +1,34 @@
+from functools import lru_cache
+
 from django import template
+
 from usep_app import models
 
 register = template.Library()
 
-v = models.Vocab()
 
-@register.filter( name='tax' )
-def tax( name ):
-  return v[name]
+@lru_cache(maxsize=1)
+def display_vocabulary() -> models.Vocab:
+    """
+    Loads the vocabulary the first time a template displays a catalog label.
+    Called by: tax().
+    """
+    return models.Vocab()
 
-@register.filter( name='era' )
-def era(i):
-	# there is no year 0
-	if i == 0: i = 1
 
-	if i < 0:
-		return "{0} BCE".format(-i)
-	else:
-		return "{0} CE".format(i)
+@register.filter(name='tax')
+def tax(name: str) -> str:
+    """
+    Looks up the catalog label for a stored value.
+    Called by: Django's template engine.
+    """
+    return display_vocabulary()[name]
+
+
+@register.filter(name='era')
+def era(year: int) -> str:
+    """
+    Displays a signed year, using 1 CE for a stored year of zero.
+    Called by: Django's template engine.
+    """
+    return f'{-year} BCE' if year < 0 else f'{year or 1} CE'

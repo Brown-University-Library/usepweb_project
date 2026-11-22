@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from unittest.mock import patch
 
 from django.test import SimpleTestCase
 from django.urls import reverse
+from lxml import html
 from requests.exceptions import HTTPError
 
 from usep_app.models import SolrHelper
@@ -18,6 +21,130 @@ class SearchResultsTest(SimpleTestCase):
         self.addCleanup(get.stop)
         self.http_get.return_value.content = b'<taxonomy/>'
         self.url = reverse('search_results_url')
+
+    def solr_queries(self) -> list[str]:
+        """
+        Returns the search queries sent to Solr during the test.
+        Called by: test_blank_condition_preserves_other_search_terms(), test_name_filter_link_keeps_search(),
+        test_year_range_modes_keep_signed_years().
+        """
+        return [call.kwargs['params']['q'] for call in self.http_get.call_args_list if call.args == (SolrHelper.solr_url,)]
+
+    def test_search_form_offers_languages_from_the_index(self) -> None:
+        """
+        Checks that readers can select multiple languages from the choices returned by Solr.
+        """
+        fields = {
+            'language': ['lat', 3, 'grc', 2],
+            'text_genre': [],
+            'object_type': [],
+            'material': [],
+            'writing': [],
+            'condition': [],
+            'char': [],
+        }
+        self.http_get.return_value.json.return_value = {
+            'response': {'docs': []},
+            'facet_counts': {'facet_fields': fields, 'facet_queries': {}},
+        }
+        response = self.client.get(reverse('search_url'))
+        self.assertEqual(response.status_code, 200)
+        options = html.fromstring(response.content).xpath('//form//select[@name="language" and @multiple]/option')
+        self.assertEqual(
+            [(option.get('value'), option.text_content().strip()) for option in options],
+            [('grc', 'Greek'), ('lat', 'Latin')],
+        )
+
+    def test_name_filter_link_keeps_search(self) -> None:
+        """
+        Checks that following a name filter keeps the original text and both selected languages.
+        """
+        self.http_get.return_value.json.return_value = {
+            'response': {'docs': [{'id': 'TEST.1'}]},
+            'facet_counts': {'facet_fields': {'name': ['Julia', 1]}, 'facet_queries': {}},
+        }
+        response = self.client.get(self.url, {'text': 'λίθος', 'language': ['grc', 'lat']})
+        self.assertEqual(response.status_code, 200)
+        links = html.fromstring(response.content).xpath('//a[normalize-space(.)="Julia (1)"]/@href')
+        self.assertEqual(len(links), 1)
+        filtered = self.client.get(links[0])
+        self.assertContains(filtered, 'TEST.1')
+
+        original, refined = self.solr_queries()
+        for query in (original, refined):
+            self.assertRegex(query, r'text:"?λίθος\b')
+            self.assertRegex(query, r'language:"?grc"? OR language:"?lat\b')
+        self.assertNotIn('Julia', original)
+        self.assertRegex(refined, r'name:"?Julia\b')
+
+    def test_year_range_modes_keep_signed_years(self) -> None:
+        """
+        Checks that both date modes carry signed years to Solr and display the dates of a returned inscription.
+        """
+        self.http_get.return_value.json.return_value = {
+            'response': {'docs': [{'id': 'TEST.1', 'notBefore': -25, 'notAfter': 10}]},
+            'facet_counts': {'facet_fields': {}, 'facet_queries': {}},
+        }
+        for mode in ('inclusive', 'exclusive'):
+            with self.subTest(mode=mode):
+                response = self.client.get(self.url, {'date_type': mode, 'notBefore': '-100', 'notAfter': '50'})
+                self.assertContains(response, 'Between 25 BCE and 10 CE')
+
+        inclusive, exclusive = self.solr_queries()
+        self.assertEqual(inclusive, '(notBefore:[* TO 50] AND notAfter:[-100 TO *])')
+        self.assertEqual(exclusive, '(notBefore:[-100 TO *] AND notAfter:[* TO 50])')
+
+    def test_invalid_controls_return_400_before_any_service_call(self) -> None:
+        """
+        Checks that unsupported controls, malformed years, and oversized requests get a local response.
+        """
+        cases = [
+            {'extra': 'stone'},
+            {'facet_extra': 'stone'},
+            {'status': 'unknown'},
+            {'fake': ['hide', 'include']},
+            {'facet_status': 'unknown'},
+            {'language': 'Latin and Greek'},
+            {'object_type': 'stone, marble'},
+            {'notBefore': 'early', 'notAfter': '50'},
+            {'notBefore': '1', 'notAfter': ''},
+            {'notBefore': '60', 'notAfter': '50'},
+            {'notBefore': '-1001', 'notAfter': '50'},
+            {'date_type': 'unknown', 'notBefore': '-100', 'notAfter': '50'},
+            {'text': 'a' * 513},
+            {'facet_name': 'a' * 129},
+            {'text': 'first\nsecond'},
+            {'material': ['stone'] * 257},
+            {'text': 'a' * 8193},
+        ]
+        for terms in cases:
+            with self.subTest(terms=terms):
+                response = self.client.get(self.url, terms)
+                self.assertContains(response, 'Back to search', status_code=400)
+                self.http_get.assert_not_called()
+
+        with self.settings(DATA_UPLOAD_MAX_NUMBER_FIELDS=1):
+            response = self.client.get(self.url, {'language': ['grc', 'lat']})
+            self.assertContains(response, 'Back to search', status_code=400)
+            self.http_get.assert_not_called()
+
+    def test_text_and_filter_punctuation_are_literal(self) -> None:
+        """
+        Checks punctuation and an operator word in free text, then follows a filter containing URL punctuation.
+        """
+        name = 'A & B #2'
+        self.http_get.return_value.json.return_value = {
+            'response': {'docs': []},
+            'facet_counts': {'facet_fields': {'name': [name, 1]}, 'facet_queries': {}},
+        }
+        response = self.client.get(self.url, {'text': 'λίθος OR "stone" A\\B'})
+        self.assertEqual(response.status_code, 200)
+        links = html.fromstring(response.content).xpath('//ul[@class="facet_list"]//a/@href')
+        self.assertEqual(len(links), 1)
+        self.assertEqual(self.client.get(links[0]).status_code, 200)
+        original, refined = self.solr_queries()
+        self.assertEqual(original, r'(text:λίθος text:"OR" text:"\"stone\"" text:"A\\B")')
+        self.assertEqual(refined, f'{original} AND (name:"{name}")')
 
     def test_blank_condition_preserves_other_search_terms(self) -> None:
         """
@@ -42,8 +169,7 @@ class SearchResultsTest(SimpleTestCase):
                 self.http_get.reset_mock()
                 response = self.client.get(self.url, {**terms, **condition})
                 self.assertContains(response, 'TEST.1')
-                searches = [call for call in self.http_get.call_args_list if call.args == (SolrHelper.solr_url,)]
-                self.assertEqual([call.kwargs['params']['q'] for call in searches], [expected])
+                self.assertEqual(self.solr_queries(), [expected])
 
     def test_no_matches(self) -> None:
         """
