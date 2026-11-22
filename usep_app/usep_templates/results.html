@@ -49,7 +49,7 @@
 
 
 {% if invalid_search %}
-<p>We couldn’t read this search. Please check your search terms and filters.</p>
+<p>We couldn’t read this search. {{ search_error|default:"Please check your search terms and filters." }}</p>
 <a href="{% url 'search_url' %}">Back to search</a>
 {% else %}
 
@@ -115,11 +115,11 @@ No Results. <a href="../">Search again...</a>
 				{% for name,count in counts %}
 					<li>
 						{% if name == "none_value" %}
-						<a class="none_facet" href="{{url}}&amp;facet_{{facet}}={{name}}">
+							<a class="none_facet" href="{{filter_url}}facet_{{facet}}={{name|urlencode:''}}">
 							No Value ({{count}})
 						</a>
 						{% else %}
-						<a href="{{url}}&amp;facet_{{facet}}={{name}}">
+							<a href="{{filter_url}}facet_{{facet}}={{name|urlencode:''}}">
 							{{name|tax}} ({{count}})
 						</a>
 						{% endif %}
