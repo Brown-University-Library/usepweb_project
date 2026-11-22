@@ -91,10 +91,60 @@ class SearchResultsTest(SimpleTestCase):
                 self.assertContains(response, 'Between 25 BCE and 10 CE')
 
         inclusive, exclusive = self.solr_queries()
-        for query in (inclusive, exclusive):
-            self.assertIn('-100', query)
-            self.assertIn('50', query)
-        self.assertNotEqual(inclusive, exclusive)
+        self.assertEqual(inclusive, '(notBefore:[* TO 50] AND notAfter:[-100 TO *])')
+        self.assertEqual(exclusive, '(notBefore:[-100 TO *] AND notAfter:[* TO 50])')
+
+    def test_invalid_controls_return_400_before_any_service_call(self) -> None:
+        """
+        Checks that unsupported controls, malformed years, and oversized requests get a local response.
+        """
+        cases = [
+            {'extra': 'stone'},
+            {'facet_extra': 'stone'},
+            {'status': 'unknown'},
+            {'fake': ['hide', 'include']},
+            {'facet_status': 'unknown'},
+            {'language': 'Latin and Greek'},
+            {'object_type': 'stone, marble'},
+            {'notBefore': 'early', 'notAfter': '50'},
+            {'notBefore': '1', 'notAfter': ''},
+            {'notBefore': '60', 'notAfter': '50'},
+            {'notBefore': '-1001', 'notAfter': '50'},
+            {'date_type': 'unknown', 'notBefore': '-100', 'notAfter': '50'},
+            {'text': 'a' * 513},
+            {'facet_name': 'a' * 129},
+            {'text': 'first\nsecond'},
+            {'material': ['stone'] * 257},
+            {'text': 'a' * 8193},
+        ]
+        for terms in cases:
+            with self.subTest(terms=terms):
+                response = self.client.get(self.url, terms)
+                self.assertContains(response, 'Back to search', status_code=400)
+                self.http_get.assert_not_called()
+
+        with self.settings(DATA_UPLOAD_MAX_NUMBER_FIELDS=1):
+            response = self.client.get(self.url, {'language': ['grc', 'lat']})
+            self.assertContains(response, 'Back to search', status_code=400)
+            self.http_get.assert_not_called()
+
+    def test_text_and_filter_punctuation_are_literal(self) -> None:
+        """
+        Checks punctuation and an operator word in free text, then follows a filter containing URL punctuation.
+        """
+        name = 'A & B #2'
+        self.http_get.return_value.json.return_value = {
+            'response': {'docs': []},
+            'facet_counts': {'facet_fields': {'name': [name, 1]}, 'facet_queries': {}},
+        }
+        response = self.client.get(self.url, {'text': 'λίθος OR "stone" A\\B'})
+        self.assertEqual(response.status_code, 200)
+        links = html.fromstring(response.content).xpath('//ul[@class="facet_list"]//a/@href')
+        self.assertEqual(len(links), 1)
+        self.assertEqual(self.client.get(links[0]).status_code, 200)
+        original, refined = self.solr_queries()
+        self.assertEqual(original, r'(text:λίθος text:"OR" text:"\"stone\"" text:"A\\B")')
+        self.assertEqual(refined, f'{original} AND (name:"{name}")')
 
     def test_blank_condition_preserves_other_search_terms(self) -> None:
         """
